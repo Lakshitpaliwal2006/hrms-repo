@@ -304,7 +304,7 @@ const PayrollManagementPage = () => {
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-100 dark:bg-slate-950/80 text-slate-600 dark:text-slate-400 uppercase font-semibold border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <th className="px-6 py-4">Employee</th>
+                  <th className="px-6 py-4">Employeess</th>
                   <th className="px-6 py-4">Department</th>
                   <th className="px-6 py-4">Basic Pay</th>
                   <th className="px-6 py-4">Allowances</th>
