@@ -60,7 +60,8 @@ function App() {
                     <Route path="/admin/attendance" element={<AllAttendancePage />} />
                     <Route path="/admin/leaves" element={<LeaveApprovalPage />} />
                     <Route path="/admin/payroll" element={<PayrollManagementPage />} />
-                    <Route path="/admin/profile" element={<ProfilePage />} />
+                    <Route path="/admin/profile" element={<ProfilePage />} /> 
+                    <Route path="/admin/payroll/*" element={<PayrollManagementPage />} />
                     <Route path="/admin/employee-view" element={<EmployeeContextView />} />
                   </Route>
                 </Route>

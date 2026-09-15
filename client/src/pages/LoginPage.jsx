@@ -22,9 +22,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from '../context/AuthContext';
-import { motion } from "motion/react";
-import { Typewriter } from "motion-plus/react";
-import { TypeAnimation } from "react-type-animation";
 import { useToast } from '../context/ToastContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api/client';
