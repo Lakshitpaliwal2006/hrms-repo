@@ -945,7 +945,7 @@ const LoginPage = () => {
 
       {/* Footer */}
       <footer className="relative z-10 px-6 py-4 text-center text-xs text-brand-500 dark:text-slate-500 border-t border-slate-200 dark:border-slate-900 bg-[#fff] dark:bg-slate-950/60">
-        A smarter way to manage people, processes, and workplace operations.
+        A smarter way to manage people, processes, and workplace operations. HRMS
       </footer>
     </div>
   );
