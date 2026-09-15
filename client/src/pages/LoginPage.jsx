@@ -218,272 +218,15 @@ const LoginPage = () => {
 
       {/* Main Container */}
       <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-10">
-        <div className="w-1/3 max-w-5xl grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-          <div className="lg:col-span-6 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-9 shadow-xl dark:shadow-2xl backdrop-blur-xl transition-colors duration-200">
-
-            {/* Mode Switcher Tabs */}
-            <div className='flex flex-col'>
-              <div className="flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 mb-6 text-xs font-bold">
-                <button
-                  type="button"
-                  onClick={() => setAuthMode('login')}
-                  className={`flex-1 py-2 rounded-xl transition-all ${authMode === 'login'
-                    ? 'bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                >
-                  Sign In
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAuthMode('signup')}
-                  className={`flex-1 py-2 rounded-xl transition-all ${authMode === 'signup'
-                    ? 'bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                >
-                  Sign Up
-                </button>
-                {/* <button
-                type="button"
-                onClick={() => setAuthMode('verify')}
-                className={`flex-1 py-2 rounded-xl transition-all ${
-                  authMode === 'verify'
-                    ? 'bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                Verify Email
-              </button> */}
-              </div>
-
-              {/* TAB 1: SIGN IN */}
-              {authMode === 'login' && (
-                <>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                      Sign in to HumNex
-                    </h2>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
-                      Work smarter. Stay in sync.
-                    </p>
-                  </div>
-
-                  <form onSubmit={handleLoginSubmit} className="space-y-4">
-                    {/* Email field */}
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                        Work Email
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                          <User className="w-4 h-4" />
-                        </div>
-                        <input
-                          type="email"
-                          required
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="e.g. yourname@company.com"
-                          className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Password field */}
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                        Password
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                          <Lock className="w-4 h-4" />
-                        </div>
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          required
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          placeholder="Enter your password"
-                          className="w-full pl-10 pr-11 py-2.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-                        >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Submit button */}
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full mt-2 py-3 px-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-sm shadow-glow flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Signing in...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Sign In</span>
-                          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                        </>
-                      )}
-                    </button>
-                  </form>
-                </>
-              )}
-
-              {/* TAB 2: SIGN UP */}
-              {authMode === 'signup' && (
-                <>
-                  <div className="mb-5">
-                    <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                      Create HumNex Account
-                    </h2>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
-                      Register a new Employee or HR Administrator identity.
-                    </p>
-                  </div>
-
-                  <form onSubmit={handleSignupSubmit} className="space-y-3.5 text-xs">
-                    {/* Role Selector */}
-                    <div>
-                      <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                        Organization Role *
-                      </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setSignupData({ ...signupData, role: 'employee' })}
-                          className={`p-2.5 rounded-xl border text-center font-bold transition-all flex items-center justify-center gap-1.5 ${signupData.role === 'employee'
-                            ? 'bg-brand-50 dark:bg-brand-950/60 border-brand-500 text-brand-700 dark:text-brand-300'
-                            : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-                            }`}
-                        >
-                          <User className="w-4 h-4" />
-                          Employee
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setSignupData({ ...signupData, role: 'admin' })}
-                          className={`p-2.5 rounded-xl border text-center font-bold transition-all flex items-center justify-center gap-1.5 ${signupData.role === 'admin'
-                            ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-500 text-amber-700 dark:text-amber-300'
-                            : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-                            }`}
-                        >
-                          <Shield className="w-4 h-4" />
-                          HR / Admin
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Employee ID & Name */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                          Employee ID *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={signupData.employeeId}
-                          onChange={(e) =>
-                            setSignupData({ ...signupData, employeeId: e.target.value.toUpperCase() })
-                          }
-                          placeholder="e.g. EMP-007"
-                          className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-mono text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                          Full Name
-                        </label>
-                        <input
-                          type="text"
-                          value={signupData.name}
-                          onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
-                          placeholder="e.g. Vikramaditya Rao"
-                          className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                      <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                        Work Email *
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={signupData.email}
-                        onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
-                        placeholder="e.g. vikram@dayflow.com"
-                        className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-                      />
-                    </div>
-
-                    {/* Password */}
-                    <div>
-                      <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                        Password (min 6 characters) *
-                      </label>
-                      <div className="relative">
-                        <input
-                          type={showSignupPassword ? 'text' : 'password'}
-                          required
-                          minLength={6}
-                          value={signupData.password}
-                          onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
-                          placeholder="Create a strong password"
-                          className="w-full pl-3.5 pr-10 py-2 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowSignupPassword(!showSignupPassword)}
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                        >
-                          {showSignupPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-[11px] text-amber-800 dark:text-amber-300 flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                      <span>
-                        After sign-up, your account will be created in an <strong>Unverified</strong> state. You must verify your email before logging in.
-                      </span>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full py-2.5 px-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs shadow-glow flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-                    >
-                      {isSubmitting ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        <>
-                          <UserPlus className="w-4 h-4" />
-                          <span>Sign up</span>
-                        </>
-                      )}
-                    </button>
-                  </form>
-                </>
-              )}
+        <div className="w-full max-w-7xl flex flex-col lg:flex-col gap-8 items-center">
+          {/* Left: the two login/signup cards */}
+          <div className="w-full lg:flex-1 flex flex-col md:flex-row gap-6 min-w-0">
+            <div className="flex-1 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-9 shadow-xl dark:shadow-2xl backdrop-blur-xl transition-colors duration-200">
+              {/* This is Left Commponent Used For Discriptions */}
             </div>
 
             {/* Right Column: Form (Login / Sign Up / Verify Email) */}
-            <div className="lg:col-span-6 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-9 shadow-xl dark:shadow-2xl backdrop-blur-xl transition-colors duration-200">
-
+            <div className="flex-1 min-w-0 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-9 shadow-xl dark:shadow-2xl backdrop-blur-xl transition-colors duration-200">
               {/* Mode Switcher Tabs */}
               <div className="flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 mb-6 text-xs font-bold">
                 <button
@@ -819,9 +562,8 @@ const LoginPage = () => {
             )} */}
             </div>
           </div>
-
           {/* Right Column: 1-Click Demo Accounts for Hackathon Judges */}
-          <div className="lg:col-span-6 space-y-3 flex gap-5">
+          <div className="w-full lg:w-100 shrink-0 flex gap-3">
             {/* <div className="p-3.5 rounded-2xl bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-800/40">
               <div className="flex items-center gap-2 text-brand-700 dark:text-brand-300 text-xs font-bold uppercase tracking-wider mb-0.5">
                 <Zap className="w-4 h-4 text-amber-500 animate-pulse" />
@@ -887,7 +629,7 @@ const LoginPage = () => {
             </button>
 
             {/* Employee 2 - Rohan Nair (UI/UX Design) */}
-            {/* <button
+            <button
               type="button"
               onClick={() => handleQuickDemo('elena@dayflow.com', 'employee123')}
               className="w-full text-left p-3.5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 transition-all group flex items-center justify-between shadow-sm"
@@ -911,7 +653,7 @@ const LoginPage = () => {
                 </div>
               </div>
               <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 group-hover:translate-x-1 transition-all" />
-            </button> */}
+            </button>
 
             {/* Employee 3 - Arjun Menon (Marketing) */}
             {/* <button
@@ -945,7 +687,7 @@ const LoginPage = () => {
 
       {/* Footer */}
       <footer className="relative z-10 px-6 py-4 text-center text-xs text-brand-500 dark:text-slate-500 border-t border-slate-200 dark:border-slate-900 bg-[#fff] dark:bg-slate-950/60">
-        A smarter way to manage people, processes, and workplace operations. HRMS Project
+        A smarter way to manage people, processes, and workplace operations.
       </footer>
     </div>
   );
