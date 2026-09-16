@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import {
   Sparkles,
   Shield,
@@ -75,80 +75,80 @@ const LoginPage = () => {
     }
   }, [location.search]);
 
-  const handleLoginSubmit = async (e, customEmail, customPassword) => {
-    if (e) e.preventDefault();
-    const loginEmail = customEmail || email;
-    const loginPass = customPassword || password;
+  // const handleLoginSubmit = async (e, customEmail, customPassword) => {
+  //   if (e) e.preventDefault();
+  //   const loginEmail = customEmail || email;
+  //   const loginPass = customPassword || password;
 
-    if (!loginEmail || !loginPass) {
-      toast.error('Please enter both email and password');
-      return;
-    }
+  //   if (!loginEmail || !loginPass) {
+  //     toast.error('Please enter both email and password');
+  //     return;
+  //   }
 
-    setIsSubmitting(true);
-    try {
-      const res = await api.post('/auth/login', { email: loginEmail, password: loginPass });
-      setIsSubmitting(false);
+  //   setIsSubmitting(true);
+  //   try {
+  //     const res = await api.post('/auth/login', { email: loginEmail, password: loginPass });
+  //     setIsSubmitting(false);
 
-      if (res.data.success) {
-        localStorage.setItem('dayflow_token', res.data.token);
-        localStorage.setItem('dayflow_user', JSON.stringify(res.data.user));
-        toast.success(`Welcome to WorkZen, ${res.data.user.name}!`);
+  //     if (res.data.success) {
+  //       localStorage.setItem('dayflow_token', res.data.token);
+  //       localStorage.setItem('dayflow_user', JSON.stringify(res.data.user));
+  //       toast.success(`Welcome to WorkZen, ${res.data.user.name}!`);
 
-        const targetRoute =
-          location.state?.from?.pathname ||
-          (res.data.user.role === 'admin' ? '/admin' : '/employee');
+  //       const targetRoute =
+  //         location.state?.from?.pathname ||
+  //         (res.data.user.role === 'admin' ? '/admin' : '/employee');
 
-        // Force window location or navigate to load fresh context
-        window.location.href = targetRoute;
-      }
-    } catch (err) {
-      setIsSubmitting(false);
-      const data = err.response?.data;
-      if (data?.unverified) {
-        toast.error('Email not verified. Redirecting to verification...');
-        setAuthMode('verify');
-        setVerifyEmailInput(data.email || loginEmail);
-        if (data.verificationToken) {
-          setVerifyTokenInput(data.verificationToken);
-        }
-      } else {
-        toast.error(data?.message || 'Login failed. Please check your credentials.');
-      }
-    }
-  };
+  //       // Force window location or navigate to load fresh context
+  //       window.location.href = targetRoute;
+  //     }
+  //   } catch (err) {
+  //     setIsSubmitting(false);
+  //     const data = err.response?.data;
+  //     if (data?.unverified) {
+  //       toast.error('Email not verified. Redirecting to verification...');
+  //       setAuthMode('verify');
+  //       setVerifyEmailInput(data.email || loginEmail);
+  //       if (data.verificationToken) {
+  //         setVerifyTokenInput(data.verificationToken);
+  //       }
+  //     } else {
+  //       toast.error(data?.message || 'Login failed. Please check your credentials.');
+  //     }
+  //   }
+  // };
 
-  const handleSignupSubmit = async (e) => {
-    e.preventDefault();
-    if (!signupData.employeeId || !signupData.email || !signupData.password) {
-      toast.error('Please fill in all required registration fields.');
-      return;
-    }
+  // const handleSignupSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!signupData.employeeId || !signupData.email || !signupData.password) {
+  //     toast.error('Please fill in all required registration fields.');
+  //     return;
+  //   }
 
-    if (signupData.password.length < 6) {
-      toast.error('Password must be at least 6 characters.');
-      return;
-    }
+  //   if (signupData.password.length < 6) {
+  //     toast.error('Password must be at least 6 characters.');
+  //     return;
+  //   }
 
-    setIsSubmitting(true);
-    try {
-      const res = await api.post('/auth/register', signupData);
-      setIsSubmitting(false);
+  //   setIsSubmitting(true);
+  //   try {
+  //     const res = await api.post('/auth/register', signupData);
+  //     setIsSubmitting(false);
 
-      if (res.data.success) {
-        toast.success('Registration successful! Please verify your email.');
-        setDemoVerificationInfo(res.data.demoVerification);
-        setVerifyEmailInput(signupData.email);
-        if (res.data.demoVerification?.token) {
-          setVerifyTokenInput(res.data.demoVerification.token);
-        }
-        setAuthMode('verify');
-      }
-    } catch (err) {
-      setIsSubmitting(false);
-      toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
-    }
-  };
+  //     if (res.data.success) {
+  //       toast.success('Registration successful! Please verify your email.');
+  //       setDemoVerificationInfo(res.data.demoVerification);
+  //       setVerifyEmailInput(signupData.email);
+  //       if (res.data.demoVerification?.token) {
+  //         setVerifyTokenInput(res.data.demoVerification.token);
+  //       }
+  //       setAuthMode('verify');
+  //     }
+  //   } catch (err) {
+  //     setIsSubmitting(false);
+  //     toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
+  //   }
+  // };
 
   const handleVerifySubmit = async (e) => {
     if (e) e.preventDefault();
@@ -201,7 +201,7 @@ const LoginPage = () => {
             <span className="text-xs text-brand-400 dark:text-slate-400 font-semibold hidden sm:inline-block">
               Human Resource Management System
             </span>
-            <button
+            {/* <button
               onClick={toggleTheme}
               title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               className="p-2 rounded-xl bg-slate-100 dark:bg-slate-850 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 text-slate-700 dark:text-slate-300 transition-all flex items-center justify-center shadow-sm"
@@ -211,7 +211,7 @@ const LoginPage = () => {
               ) : (
                 <FontAwesomeIcon icon={faMoon} className="w-4 h-4 text-indigo-500 " />
               )}
-            </button>
+            </button> */}
           </div>
         </div>
       </header>
@@ -221,8 +221,30 @@ const LoginPage = () => {
         <div className="w-full max-w-7xl flex flex-col lg:flex-col gap-8 items-center">
           {/* Left: the two login/signup cards */}
           <div className="w-full lg:flex-1 flex flex-col md:flex-row gap-6 min-w-0">
-            <div className="flex-1 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-9 shadow-xl dark:shadow-2xl backdrop-blur-xl transition-colors duration-200">
-              {/* This is Left Commponent Used For Discriptions */}
+            <div className="flex-1 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl p-3 sm:p-9 shadow-xl dark:shadow-2xl backdrop-blur-xl transition-colors duration-200">
+              {/* This is Left Commponent Used For Sfot glow animation and Discriptions */}
+              <div className="relativ dark:bg-slate-900/90 transition-colors duration-200 overflow-hidden min-h-[520px] flex items-center justify-center flex-col">
+
+                {/* Soft glow behind the animation */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-64 h-64 bg-brand-500/15 dark:bg-brand-600/20 rounded-full blur-[90px]"></div>
+                </div>
+
+                <DotLottieReact
+                  src='https://lottie.host/6bfd9910-fb51-44a8-9b35-c47df405b7ac/VwFWC2GTXq.lottie'
+                  loop
+                  autoplay
+                  className="relative z-10 w-full max-w-sm"
+                />
+                <div className="relative z-10 mt-6 max-w-sm">
+                  <h2 className="text-2xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    Your entire workforce, in one place
+                  </h2>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm mt-6 leading-relaxed">
+                    Laxmaya brings attendance, payroll, leave, and performance management together in a single, real-time HR platform — built to keep teams in sync.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Right Column: Form (Login / Sign Up / Verify Email) */}
@@ -265,223 +287,456 @@ const LoginPage = () => {
               {/* TAB 1: SIGN IN */}
               {authMode === 'login' && (
                 <>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                      Sign in to HumNex
-                    </h2>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
-                      Work smarter. Stay in sync.
-                    </p>
-                  </div>
+                  <div className="min-h-fit w-full flex items-start justify-center bg-white px-6 pt-1 sm:pt-5">
+                    <div className="w-full max-w-md">
+                      <span className="text-sm font-semibold text-slate-900">LaxMaya</span>
+                      <h2 className="text-2xl font-semibold text-slate-900 tracking-tight mt-6 mb-10">
+                        Sign in
+                      </h2>
+                      {/* onSubmit={handleLoginSubmit} */}
+                      <form className="relative">
+                        {/* connecting line running through every step */}
+                        <div className="absolute left-[5px] top-2 bottom-2 w-px bg-slate-200" />
 
-                  <form onSubmit={handleLoginSubmit} className="space-y-4">
-                    {/* Email field */}
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                        Work Email
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                          <User className="w-4 h-4" />
-                        </div>
-                        <input
-                          type="email"
-                          required
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="e.g. yourname@company.com"
-                          className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
-                        />
-                      </div>
-                    </div>
+                        <div className="space-y-9">
+                          {/* Step 1 — email */}
+                          <div className="relative pl-8">
+                            <span
+                              className={`absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 transition-colors ${email
+                                ? "bg-slate-950 border-slate-950"
+                                : "bg-white border-slate-300"
+                                }`}
+                            />
+                            <label htmlFor="email" className="block text-sm text-slate-500 mb-1.5">
+                              Work email
+                            </label>
+                            <input
+                              id="email"
+                              type="email"
+                              required
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              placeholder="yourname@company.com"
+                              className="w-full py-1.5 bg-transparent border-0 border-b border-slate-200 text-slate-900 placeholder-slate-300 text-base focus:outline-none focus:border-slate-900 transition-colors"
+                            />
+                          </div>
 
-                    {/* Password field */}
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                        Password
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                          <Lock className="w-4 h-4" />
+                          {/* Step 2 — password */}
+                          <div className="relative pl-8">
+                            <span
+                              className={`absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 transition-colors ${password
+                                ? "bg-slate-950 border-slate-950"
+                                : "bg-white border-slate-300"
+                                }`}
+                            />
+                            <div className="flex items-center justify-between mb-1.5">
+                              <label htmlFor="password" className="text-sm text-slate-500">
+                                Password
+                              </label>
+                              <button type="button" className="text-xs text-slate-400 hover:text-slate-700">
+                                Forgot it?
+                              </button>
+                            </div>
+                            <div className="relative">
+                              <input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password"
+                                className="w-full py-1.5 pr-7 bg-transparent border-0 border-b border-slate-200 text-slate-900 placeholder-slate-300 text-base focus:outline-none focus:border-slate-900 transition-colors"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                className="absolute right-0 bottom-1.5 text-slate-400 hover:text-slate-600"
+                              >
+                                {showPassword ? (
+                                  <EyeOff className="w-4 h-4" />
+                                ) : (
+                                  <Eye className="w-4 h-4" />
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                          <div className="relative pl-8">
+                            <span
+                              className={`absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 transition-colors ${isSubmitting
+                                ? "bg-slate-950 border-slate-950"
+                                : "bg-white border-slate-300"
+                                }`}
+                            />
+                            <button
+                              type="submit"
+                              disabled={isSubmitting}
+                              className="px-6 py-2.5 bg-slate-950 hover:bg-slate-800 text-white text-sm font-medium rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            >
+                              {isSubmitting ? (
+                                <>
+                                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                  <span>Signing in…</span>
+                                </>
+                              ) : (
+                                <span>Sign in</span>
+                              )}
+                            </button>
+                          </div>
                         </div>
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          required
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          placeholder="Enter your password"
-                          className="w-full pl-10 pr-11 py-2.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-                        >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </form>
+
+                      <p className="mt-10 text-sm text-slate-400">
+                        New here?{" "}
+                        <button className="text-slate-900 underline underline-offset-2">
+                          Create an account
                         </button>
-                      </div>
+                      </p>
                     </div>
+                  </div>
+                  <div className="w-full lg:w-100 shrink-0 flex gap-3 mt-5">
+                    {/* <div className="p-3.5 rounded-2xl bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-800/40">
+              <div className="flex items-center gap-2 text-brand-700 dark:text-brand-300 text-xs font-bold uppercase tracking-wider mb-0.5">
+                <Zap className="w-4 h-4 text-amber-500 animate-pulse" />
+                Hackathon Demo Quick Switcher
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                Click any profile card below to sign in instantly with verified Indian demo accounts.
+              </p>
+            </div> */}
 
-                    {/* Submit button */}
+                    {/* HR Admin Card - Priya Iyer */}
                     <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full mt-2 py-3 px-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-sm shadow-glow flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
+                      type="button"
+                      onClick={() => handleQuickDemo('admin@dayflow.com', 'admin123')}
+                      className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
                     >
-                      {isSubmitting ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Signing in...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Sign In</span>
-                          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                        </>
-                      )}
+                      <img
+                        src={demoAvatars.priya}
+                        alt="Priya Iyer"
+                        className="w-16 h-16 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+                      />
+
+                      <div className="flex flex-col items-center gap-1">
+                        <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
+                          Priya Iyer
+                        </h4>
+
+                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
+                          HR Admin
+                        </span>
+
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                          HR Manager • Bengaluru
+                        </p>
+                      </div>
+
+                      <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
                     </button>
-                  </form>
+
+                    {/* Employee 1 - Ananya Sharma (Engineering) */}
+                    <button
+                      type="button"
+                      onClick={() => handleQuickDemo('alex@dayflow.com', 'employee123')}
+                      className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
+                    >
+                      <img
+                        src={demoAvatars.ananya}
+                        alt="Ananya Sharma"
+                        className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+                      />
+
+                      <div className="flex flex-col items-center gap-1">
+                        <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
+                          Ananya Sharma
+                        </h4>
+
+                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
+                          Employee
+                        </span>
+
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                          Senior Fullstack Dev • Bengaluru
+                        </p>
+                      </div>
+
+                      <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
+                    </button>
+
+                    {/* Employee 2 - Rohan Nair (UI/UX Design) */}
+                    <button
+                      type="button"
+                      onClick={() => handleQuickDemo('elena@dayflow.com', 'employee123')}
+                      className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
+                    >
+                      <img
+                        src={demoAvatars.rohan}
+                        alt="Rohan Nair"
+                        className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+                      />
+
+                      <div className="flex flex-col items-center gap-1">
+                        <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
+                          Rohan Nair
+                        </h4>
+
+                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
+                          Employee
+                        </span>
+
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                          Lead UI/UX Designer • Bengaluru
+                        </p>
+                      </div>
+
+                      <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
+                    </button>
+
+                    {/* Employee 3 - Arjun Menon (Marketing) */}
+                    {/* <button
+              type="button"
+              onClick={() => handleQuickDemo('marcus@dayflow.com', 'employee123')}
+              className="w-full text-left p-3.5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 transition-all group flex items-center justify-between shadow-sm"
+            >
+              <div className="flex items-center gap-3">
+                <img
+                  src={demoAvatars.arjun}
+                  alt="Arjun Menon"
+                  className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+                />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
+                      Arjun Menon
+                    </h4>
+                    <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
+                      Marketing
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Marketing Director • Mumbai</p>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 group-hover:translate-x-1 transition-all" />
+            </button> */}
+                  </div>
                 </>
               )}
 
               {/* TAB 2: SIGN UP */}
               {authMode === 'signup' && (
                 <>
-                  <div className="mb-5">
-                    <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                      Create HumNex Account
-                    </h2>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
-                      Register a new Employee or HR Administrator identity.
-                    </p>
+                  <div className="min-h-screen w-full flex items-start justify-center bg-white px-6 pt-1 sm:pt-10 pb-10">
+                    <div className="w-full max-w-md">
+                      <span className="text-sm font-semibold text-slate-900">LaMaya</span>
+                      <h2 className="text-2xl font-semibold text-slate-900 tracking-tight mt-6">
+                        Create your account
+                      </h2>
+                      <p className="text-slate-500 text-sm mt-1 mb-10">
+                        Register as an employee or an HR administrator.
+                      </p>
+                      {/* onSubmit={handleSignupSubmit} */}
+                      <form className="relative">
+
+                        <div className="absolute left-[5px] top-2 bottom-2 w-px bg-slate-200" />
+
+                        <div className="space-y-9">
+                          {/* Step 1 — role */}
+                          <div className="relative pl-8">
+                            <span className="absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 bg-slate-950 border-slate-950" />
+                            <label className="block text-sm text-slate-500 mb-2">
+                              Organization role
+                            </label>
+                            <div className="space-y-2">
+                              <button
+                                type="button"
+                                onClick={() => setSignupData({ ...signupData, role: "employee" })}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-colors ${signupData.role === "employee"
+                                  ? "border-slate-900 bg-slate-50"
+                                  : "border-slate-200 hover:border-slate-300"
+                                  }`}
+                              >
+                                <User className="w-4 h-4 text-slate-700 shrink-0" />
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-slate-900">Employee</p>
+                                  <p className="text-xs text-slate-500">Standard team member access</p>
+                                </div>
+                                <span
+                                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${signupData.role === "employee" ? "border-slate-900" : "border-slate-300"
+                                    }`}
+                                >
+                                  {signupData.role === "employee" && (
+                                    <span className="w-2 h-2 rounded-full bg-slate-900" />
+                                  )}
+                                </span>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => setSignupData({ ...signupData, role: "admin" })}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-colors ${signupData.role === "admin"
+                                  ? "border-slate-900 bg-slate-50"
+                                  : "border-slate-200 hover:border-slate-300"
+                                  }`}
+                              >
+                                <Shield className="w-4 h-4 text-slate-700 shrink-0" />
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-slate-900">HR / Admin</p>
+                                  <p className="text-xs text-slate-500">Manage employee records and access</p>
+                                </div>
+                                <span
+                                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${signupData.role === "admin" ? "border-slate-900" : "border-slate-300"
+                                    }`}
+                                >
+                                  {signupData.role === "admin" && (
+                                    <span className="w-2 h-2 rounded-full bg-slate-900" />
+                                  )}
+                                </span>
+                              </button>
+                            </div>
+                          </div>
+
+
+                          <div className="relative pl-8">
+                            <span
+                              className={`absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 transition-colors ${signupData.employeeId
+                                ? "bg-slate-950 border-slate-950"
+                                : "bg-white border-slate-300"
+                                }`}
+                            />
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label htmlFor="employeeId" className="block text-sm text-slate-500 mb-1.5">
+                                  Employee ID
+                                </label>
+                                <input
+                                  id="employeeId"
+                                  type="text"
+                                  required
+                                  value={signupData.employeeId}
+                                  onChange={(e) =>
+                                    setSignupData({ ...signupData, employeeId: e.target.value.toUpperCase() })
+                                  }
+                                  placeholder="EMP-007"
+                                  className="w-full py-1.5 bg-transparent border-0 border-b border-slate-200 text-slate-900 placeholder-slate-300 font-mono text-sm focus:outline-none focus:border-slate-900 transition-colors"
+                                />
+                              </div>
+                              <div>
+                                <label htmlFor="name" className="block text-sm text-slate-500 mb-1.5">
+                                  Full name
+                                </label>
+                                <input
+                                  id="name"
+                                  type="text"
+                                  value={signupData.name}
+                                  onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
+                                  placeholder="Vikramaditya Rao"
+                                  className="w-full py-1.5 bg-transparent border-0 border-b border-slate-200 text-slate-900 placeholder-slate-300 text-sm focus:outline-none focus:border-slate-900 transition-colors"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+
+                          <div className="relative pl-8">
+                            <span
+                              className={`absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 transition-colors ${signupData.email
+                                ? "bg-slate-950 border-slate-950"
+                                : "bg-white border-slate-300"
+                                }`}
+                            />
+                            <label htmlFor="email" className="block text-sm text-slate-500 mb-1.5">
+                              Work email
+                            </label>
+                            <input
+                              id="email"
+                              type="email"
+                              required
+                              value={signupData.email}
+                              onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                              placeholder="vikram@dayflow.com"
+                              className="w-full py-1.5 bg-transparent border-0 border-b border-slate-200 text-slate-900 placeholder-slate-300 text-sm focus:outline-none focus:border-slate-900 transition-colors"
+                            />
+                          </div>
+
+
+                          <div className="relative pl-8">
+                            <span
+                              className={`absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 transition-colors ${signupData.password.length >= 6
+                                ? "bg-slate-950 border-slate-950"
+                                : "bg-white border-slate-300"
+                                }`}
+                            />
+                            <label htmlFor="password" className="block text-sm text-slate-500 mb-1.5">
+                              Password (min 6 characters)
+                            </label>
+                            <div className="relative">
+                              <input
+                                id="password"
+                                type={showSignupPassword ? "text" : "password"}
+                                required
+                                minLength={6}
+                                value={signupData.password}
+                                onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                                placeholder="Create a strong password"
+                                className="w-full py-1.5 pr-7 bg-transparent border-0 border-b border-slate-200 text-slate-900 placeholder-slate-300 text-sm focus:outline-none focus:border-slate-900 transition-colors"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowSignupPassword(!showSignupPassword)}
+                                aria-label={showSignupPassword ? "Hide password" : "Show password"}
+                                className="absolute right-0 bottom-1.5 text-slate-400 hover:text-slate-600"
+                              >
+                                {showSignupPassword ? (
+                                  <EyeOff className="w-3.5 h-3.5" />
+                                ) : (
+                                  <Eye className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                            </div>
+                          </div>
+
+
+                          <div className="relative pl-8">
+                            <span
+                              className={`absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 transition-colors ${isSubmitting
+                                ? "bg-slate-950 border-slate-950"
+                                : "bg-white border-slate-300"
+                                }`}
+                            />
+                            <div className="flex items-start gap-2 text-xs text-slate-500 mb-4">
+                              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                              <span>
+                                Your account starts <strong className="text-slate-700">unverified</strong>.
+                                Confirm your email before you can sign in.
+                              </span>
+                            </div>
+                            <button
+                              type="submit"
+                              // disabled={isSubmitting}
+                              className="px-6 py-2.5 bg-slate-950 hover:bg-slate-800 text-white text-sm font-medium rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            >
+                              {isSubmitting ? (
+                                <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              ) : (
+                                <>
+                                  <UserPlus className="w-4 h-4" />
+                                  <span>Sign up</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+
+                      <p className="mt-14 text-sm text-slate-400">
+                        Already have an account?{" "}
+                        <button className="text-slate-900 underline underline-offset-2">
+                          Sign in
+                        </button>
+                      </p>
+                    </div>
                   </div>
 
-                  <form onSubmit={handleSignupSubmit} className="space-y-3.5 text-xs">
-                    {/* Role Selector */}
-                    <div>
-                      <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                        Organization Role *
-                      </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setSignupData({ ...signupData, role: 'employee' })}
-                          className={`p-2.5 rounded-xl border text-center font-bold transition-all flex items-center justify-center gap-1.5 ${signupData.role === 'employee'
-                            ? 'bg-brand-50 dark:bg-brand-950/60 border-brand-500 text-brand-700 dark:text-brand-300'
-                            : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-                            }`}
-                        >
-                          <User className="w-4 h-4" />
-                          Employee
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setSignupData({ ...signupData, role: 'admin' })}
-                          className={`p-2.5 rounded-xl border text-center font-bold transition-all flex items-center justify-center gap-1.5 ${signupData.role === 'admin'
-                            ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-500 text-amber-700 dark:text-amber-300'
-                            : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-                            }`}
-                        >
-                          <Shield className="w-4 h-4" />
-                          HR / Admin
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Employee ID & Name */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                          Employee ID *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={signupData.employeeId}
-                          onChange={(e) =>
-                            setSignupData({ ...signupData, employeeId: e.target.value.toUpperCase() })
-                          }
-                          placeholder="e.g. EMP-007"
-                          className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-mono text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                          Full Name
-                        </label>
-                        <input
-                          type="text"
-                          value={signupData.name}
-                          onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
-                          placeholder="e.g. Vikramaditya Rao"
-                          className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                      <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                        Work Email *
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={signupData.email}
-                        onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
-                        placeholder="e.g. vikram@dayflow.com"
-                        className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-                      />
-                    </div>
-
-                    {/* Password */}
-                    <div>
-                      <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                        Password (min 6 characters) *
-                      </label>
-                      <div className="relative">
-                        <input
-                          type={showSignupPassword ? 'text' : 'password'}
-                          required
-                          minLength={6}
-                          value={signupData.password}
-                          onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
-                          placeholder="Create a strong password"
-                          className="w-full pl-3.5 pr-10 py-2 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowSignupPassword(!showSignupPassword)}
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                        >
-                          {showSignupPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-[11px] text-amber-800 dark:text-amber-300 flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                      <span>
-                        After sign-up, your account will be created in an <strong>Unverified</strong> state. You must verify your email before logging in.
-                      </span>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full py-2.5 px-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs shadow-glow flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-                    >
-                      {isSubmitting ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        <>
-                          <UserPlus className="w-4 h-4" />
-                          <span>Sign up</span>
-                        </>
-                      )}
-                    </button>
-                  </form>
                 </>
               )}
 
@@ -563,8 +818,8 @@ const LoginPage = () => {
             </div>
           </div>
           {/* Right Column: 1-Click Demo Accounts for Hackathon Judges */}
-          <div className="w-full lg:w-100 shrink-0 flex gap-3">
-            {/* <div className="p-3.5 rounded-2xl bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-800/40">
+          {/* <div className="w-full lg:w-100 shrink-0 flex gap-3"> */}
+          {/* <div className="p-3.5 rounded-2xl bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-800/40">
               <div className="flex items-center gap-2 text-brand-700 dark:text-brand-300 text-xs font-bold uppercase tracking-wider mb-0.5">
                 <Zap className="w-4 h-4 text-amber-500 animate-pulse" />
                 Hackathon Demo Quick Switcher
@@ -574,89 +829,95 @@ const LoginPage = () => {
               </p>
             </div> */}
 
-            {/* HR Admin Card - Priya Iyer */}
-            <button
+          {/* HR Admin Card - Priya Iyer */}
+          {/* <button
               type="button"
               onClick={() => handleQuickDemo('admin@dayflow.com', 'admin123')}
-              className="w-full text-left p-3.5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 transition-all group flex items-center justify-between shadow-sm"
+              className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
             >
-              <div className="flex items-center gap-3">
-                <img
-                  src={demoAvatars.priya}
-                  alt="Priya Iyer"
-                  className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-                />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                      Priya Iyer
-                    </h4>
-                    <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
-                      HR Admin
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">HR Manager • Bengaluru</p>
-                </div>
-              </div>
-              <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 group-hover:translate-x-1 transition-all" />
-            </button>
+              <img
+                src={demoAvatars.priya}
+                alt="Priya Iyer"
+                className="w-16 h-16 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+              />
 
-            {/* Employee 1 - Ananya Sharma (Engineering) */}
-            <button
+              <div className="flex flex-col items-center gap-1">
+                <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
+                  Priya Iyer
+                </h4>
+
+                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
+                  HR Admin
+                </span>
+
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  HR Manager • Bengaluru
+                </p>
+              </div>
+
+              <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
+            </button> */}
+
+          {/* Employee 1 - Ananya Sharma (Engineering) */}
+          {/* <button
               type="button"
-              onClick={() => handleQuickDemo('alex@dayflow.com', 'employee123')}
-              className="w-full text-left p-3.5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 transition-all group flex items-center justify-between shadow-sm"
+              onClick={() => handleQuickDemo('admin@dayflow.com', 'admin123')}
+              className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
             >
-              <div className="flex items-center gap-3">
-                <img
-                  src={demoAvatars.ananya}
-                  alt="Ananya Sharma"
-                  className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-                />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                      Ananya Sharma
-                    </h4>
-                    <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
-                      Employee
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Senior Fullstack Dev • Bengaluru</p>
-                </div>
-              </div>
-              <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 group-hover:translate-x-1 transition-all" />
-            </button>
+              <img
+                src={demoAvatars.ananya}
+                alt="Ananya Sharma"
+                className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+              />
 
-            {/* Employee 2 - Rohan Nair (UI/UX Design) */}
-            <button
+              <div className="flex flex-col items-center gap-1">
+                <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
+                  Ananya Sharma
+                </h4>
+
+                <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
+                  Employee
+                </span>
+
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Senior Fullstack Dev • Bengaluru
+                </p>
+              </div>
+
+              <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
+            </button> */}
+
+          {/* Employee 2 - Rohan Nair (UI/UX Design) */}
+          {/* <button
               type="button"
-              onClick={() => handleQuickDemo('elena@dayflow.com', 'employee123')}
-              className="w-full text-left p-3.5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 transition-all group flex items-center justify-between shadow-sm"
+              onClick={() => handleQuickDemo('admin@dayflow.com', 'admin123')}
+              className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
             >
-              <div className="flex items-center gap-3">
-                <img
-                  src={demoAvatars.rohan}
-                  alt="Rohan Nair"
-                  className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-                />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                      Rohan Nair
-                    </h4>
-                    <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/25">
-                      Design
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Lead UI/UX Designer • Bengaluru</p>
-                </div>
-              </div>
-              <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 group-hover:translate-x-1 transition-all" />
-            </button>
+              <img
+                src={demoAvatars.rohan}
+                alt="Rohan Nair"
+                className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+              />
 
-            {/* Employee 3 - Arjun Menon (Marketing) */}
-            {/* <button
+              <div className="flex flex-col items-center gap-1">
+                <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
+                  Rohan Nair
+                </h4>
+
+                <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
+                  Employee
+                </span>
+
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Lead UI/UX Designer • Bengaluru
+                </p>
+              </div>
+
+              <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
+            </button> */}
+
+          {/* Employee 3 - Arjun Menon (Marketing) */}
+          {/* <button
               type="button"
               onClick={() => handleQuickDemo('marcus@dayflow.com', 'employee123')}
               className="w-full text-left p-3.5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 transition-all group flex items-center justify-between shadow-sm"
@@ -681,7 +942,7 @@ const LoginPage = () => {
               </div>
               <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 group-hover:translate-x-1 transition-all" />
             </button> */}
-          </div>
+          {/* </div> */}
         </div>
       </main>
 
