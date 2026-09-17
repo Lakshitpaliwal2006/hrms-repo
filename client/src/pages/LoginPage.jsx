@@ -2,16 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import {
-  Sparkles,
+  DollarSign,
+  Briefcase,
+  Crown,
   Shield,
   User,
-  Lock,
-  ArrowRight,
   Eye,
   EyeOff,
-  Zap,
-  Sun,
-  Moon,
   Mail,
   BadgeCheck,
   UserPlus,
@@ -19,12 +16,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from 'lucide-react';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from '../context/AuthContext';
-import { motion } from "motion/react";
-import { Typewriter } from "motion-plus/react";
-import { TypeAnimation } from "react-type-animation";
 import { useToast } from '../context/ToastContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api/client';
@@ -63,6 +55,58 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Demo accounts — names, roles and photos below match the ones originally
+  // documented for the quick-switcher.
+  const demoAccounts = [
+    {
+      name: 'Aarav Sharma',
+      role: 'Super Admin',
+      // TODO: confirm this key exists in ../utils/avatars
+      avatar: demoAvatars.rohan,
+      // TODO: replace with the real Super Admin demo credentials
+      email: 'superadmin@dayflow.com',
+      password: 'superadmin123',
+      badgeClass:
+        'bg-violet-600/15 text-rose-700 dark:text-rose-300 border border-rose-500/25',
+    },
+    {
+      name: 'Priya Iyer',
+      role: 'HR Admin',
+      avatar: demoAvatars.priya,
+      email: 'admin@dayflow.com',
+      password: 'admin123',
+      badgeClass:
+        'bg-blue-600/15 text-amber-700 dark:text-amber-300 border border-amber-500/25',
+    },
+    {
+      name: 'Ananya Sharma',
+      role: 'Finance Admin',
+      avatar: demoAvatars.ananya,
+      email: 'alex@dayflow.com',
+      password: 'employee123',
+      badgeClass:
+        'bg-orange-600/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25',
+    },
+    {
+      name: 'Rohan Nair',
+      role: 'Manager',
+      avatar: demoAvatars.rohan,
+      email: 'elena@dayflow.com',
+      password: 'employee123',
+      badgeClass:
+        'bg-teal-600/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25',
+    },
+    {
+      name: 'Arjun Menon',
+      role: 'Employee',
+      avatar: demoAvatars.arjun,
+      email: 'marcus@dayflow.com',
+      password: 'employee123',
+      badgeClass:
+        'bg-green-600/15 text-amber-700 dark:text-amber-300 border border-amber-500/25',
+    },
+  ];
+
   // Check URL query parameters for token/email
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -75,80 +119,80 @@ const LoginPage = () => {
     }
   }, [location.search]);
 
-  // const handleLoginSubmit = async (e, customEmail, customPassword) => {
-  //   if (e) e.preventDefault();
-  //   const loginEmail = customEmail || email;
-  //   const loginPass = customPassword || password;
+  const handleLoginSubmit = async (e, customEmail, customPassword) => {
+    if (e) e.preventDefault();
+    const loginEmail = customEmail || email;
+    const loginPass = customPassword || password;
 
-  //   if (!loginEmail || !loginPass) {
-  //     toast.error('Please enter both email and password');
-  //     return;
-  //   }
+    if (!loginEmail || !loginPass) {
+      toast.error('Please enter both email and password');
+      return;
+    }
 
-  //   setIsSubmitting(true);
-  //   try {
-  //     const res = await api.post('/auth/login', { email: loginEmail, password: loginPass });
-  //     setIsSubmitting(false);
+    setIsSubmitting(true);
+    try {
+      const res = await api.post('/auth/login', { email: loginEmail, password: loginPass });
+      setIsSubmitting(false);
 
-  //     if (res.data.success) {
-  //       localStorage.setItem('dayflow_token', res.data.token);
-  //       localStorage.setItem('dayflow_user', JSON.stringify(res.data.user));
-  //       toast.success(`Welcome to WorkZen, ${res.data.user.name}!`);
+      if (res.data.success) {
+        localStorage.setItem('dayflow_token', res.data.token);
+        localStorage.setItem('dayflow_user', JSON.stringify(res.data.user));
+        toast.success(`Welcome to WorkZen, ${res.data.user.name}!`);
 
-  //       const targetRoute =
-  //         location.state?.from?.pathname ||
-  //         (res.data.user.role === 'admin' ? '/admin' : '/employee');
+        const targetRoute =
+          location.state?.from?.pathname ||
+          (res.data.user.role === 'admin' ? '/admin' : '/employee');
 
-  //       // Force window location or navigate to load fresh context
-  //       window.location.href = targetRoute;
-  //     }
-  //   } catch (err) {
-  //     setIsSubmitting(false);
-  //     const data = err.response?.data;
-  //     if (data?.unverified) {
-  //       toast.error('Email not verified. Redirecting to verification...');
-  //       setAuthMode('verify');
-  //       setVerifyEmailInput(data.email || loginEmail);
-  //       if (data.verificationToken) {
-  //         setVerifyTokenInput(data.verificationToken);
-  //       }
-  //     } else {
-  //       toast.error(data?.message || 'Login failed. Please check your credentials.');
-  //     }
-  //   }
-  // };
+        // Force window location or navigate to load fresh context
+        window.location.href = targetRoute;
+      }
+    } catch (err) {
+      setIsSubmitting(false);
+      const data = err.response?.data;
+      if (data?.unverified) {
+        toast.error('Email not verified. Redirecting to verification...');
+        setAuthMode('verify');
+        setVerifyEmailInput(data.email || loginEmail);
+        if (data.verificationToken) {
+          setVerifyTokenInput(data.verificationToken);
+        }
+      } else {
+        toast.error(data?.message || 'Login failed. Please check your credentials.');
+      }
+    }
+  };
 
-  // const handleSignupSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (!signupData.employeeId || !signupData.email || !signupData.password) {
-  //     toast.error('Please fill in all required registration fields.');
-  //     return;
-  //   }
+  const handleSignupSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (!signupData.employeeId || !signupData.email || !signupData.password) {
+      toast.error('Please fill in all required registration fields.');
+      return;
+    }
 
-  //   if (signupData.password.length < 6) {
-  //     toast.error('Password must be at least 6 characters.');
-  //     return;
-  //   }
+    if (signupData.password.length < 6) {
+      toast.error('Password must be at least 6 characters.');
+      return;
+    }
 
-  //   setIsSubmitting(true);
-  //   try {
-  //     const res = await api.post('/auth/register', signupData);
-  //     setIsSubmitting(false);
+    setIsSubmitting(true);
+    try {
+      const res = await api.post('/auth/register', signupData);
+      setIsSubmitting(false);
 
-  //     if (res.data.success) {
-  //       toast.success('Registration successful! Please verify your email.');
-  //       setDemoVerificationInfo(res.data.demoVerification);
-  //       setVerifyEmailInput(signupData.email);
-  //       if (res.data.demoVerification?.token) {
-  //         setVerifyTokenInput(res.data.demoVerification.token);
-  //       }
-  //       setAuthMode('verify');
-  //     }
-  //   } catch (err) {
-  //     setIsSubmitting(false);
-  //     toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
-  //   }
-  // };
+      if (res.data.success) {
+        toast.success('Registration successful! Please verify your email.');
+        setDemoVerificationInfo(res.data.demoVerification);
+        setVerifyEmailInput(signupData.email);
+        if (res.data.demoVerification?.token) {
+          setVerifyTokenInput(res.data.demoVerification.token);
+        }
+        setAuthMode('verify');
+      }
+    } catch (err) {
+      setIsSubmitting(false);
+      toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
+    }
+  };
 
   const handleVerifySubmit = async (e) => {
     if (e) e.preventDefault();
@@ -201,17 +245,6 @@ const LoginPage = () => {
             <span className="text-xs text-brand-400 dark:text-slate-400 font-semibold hidden sm:inline-block">
               Human Resource Management System
             </span>
-            {/* <button
-              onClick={toggleTheme}
-              title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              className="p-2 rounded-xl bg-slate-100 dark:bg-slate-850 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 text-slate-700 dark:text-slate-300 transition-all flex items-center justify-center shadow-sm"
-            >
-              {isDark ? (
-                <FontAwesomeIcon icon={faSun} className='w-4 h-4 text-amber-500' />
-              ) : (
-                <FontAwesomeIcon icon={faMoon} className="w-4 h-4 text-indigo-500 " />
-              )}
-            </button> */}
           </div>
         </div>
       </header>
@@ -222,8 +255,8 @@ const LoginPage = () => {
           {/* Left: the two login/signup cards */}
           <div className="w-full lg:flex-1 flex flex-col md:flex-row gap-6 min-w-0">
             <div className="flex-1 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl p-3 sm:p-9 shadow-xl dark:shadow-2xl backdrop-blur-xl transition-colors duration-200">
-              {/* This is Left Commponent Used For Sfot glow animation and Discriptions */}
-              <div className="relativ dark:bg-slate-900/90 transition-colors duration-200 overflow-hidden min-h-[520px] flex items-center justify-center flex-col">
+              {/* Left column: soft glow animation and description */}
+              <div className="relative dark:bg-slate-900/90 transition-colors duration-200 overflow-hidden min-h-[520px] flex items-center justify-center flex-col">
 
                 {/* Soft glow behind the animation */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -250,8 +283,8 @@ const LoginPage = () => {
             {/* Right Column: Form (Login / Sign Up / Verify Email) */}
             <div className="flex-1 min-w-0 bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-9 shadow-xl dark:shadow-2xl backdrop-blur-xl transition-colors duration-200">
               {/* Mode Switcher Tabs */}
-              <div className="flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 mb-6 text-xs font-bold">
-                <button
+              {/* <div className="flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 mb-6 text-xs font-bold"> */}
+              {/* <button
                   type="button"
                   onClick={() => setAuthMode('login')}
                   className={`flex-1 py-2 rounded-xl transition-all ${authMode === 'login'
@@ -260,8 +293,8 @@ const LoginPage = () => {
                     }`}
                 >
                   Sign In
-                </button>
-                <button
+                </button> */}
+              {/* <button
                   type="button"
                   onClick={() => setAuthMode('signup')}
                   className={`flex-1 py-2 rounded-xl transition-all ${authMode === 'signup'
@@ -270,19 +303,18 @@ const LoginPage = () => {
                     }`}
                 >
                   Sign Up
-                </button>
-                {/* <button
-                type="button"
-                onClick={() => setAuthMode('verify')}
-                className={`flex-1 py-2 rounded-xl transition-all ${
-                  authMode === 'verify'
+                </button> */}
+              {/* <button
+                  type="button"
+                  onClick={() => setAuthMode('verify')}
+                  className={`flex-1 py-2 rounded-xl transition-all ${authMode === 'verify'
                     ? 'bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-sm'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                Verify Email
-              </button> */}
-              </div>
+                    }`}
+                >
+                  Verify Email
+                </button> */}
+              {/* </div> */}
 
               {/* TAB 1: SIGN IN */}
               {authMode === 'login' && (
@@ -293,8 +325,7 @@ const LoginPage = () => {
                       <h2 className="text-2xl font-semibold text-slate-900 tracking-tight mt-6 mb-10">
                         Sign in
                       </h2>
-                      {/* onSubmit={handleLoginSubmit} */}
-                      <form className="relative">
+                      <form onSubmit={handleLoginSubmit} className="relative">
                         {/* connecting line running through every step */}
                         <div className="absolute left-[5px] top-2 bottom-2 w-px bg-slate-200" />
 
@@ -388,136 +419,39 @@ const LoginPage = () => {
 
                       <p className="mt-10 text-sm text-slate-400">
                         New here?{" "}
-                        <button className="text-slate-900 underline underline-offset-2">
+                        <button
+                          type="button"
+                          onClick={() => setAuthMode('signup')}
+                          className="text-slate-900 underline underline-offset-2"
+                        >
                           Create an account
                         </button>
                       </p>
                     </div>
                   </div>
-                  <div className="w-full lg:w-100 shrink-0 flex gap-3 mt-5">
-                    {/* <div className="p-3.5 rounded-2xl bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-800/40">
-              <div className="flex items-center gap-2 text-brand-700 dark:text-brand-300 text-xs font-bold uppercase tracking-wider mb-0.5">
-                <Zap className="w-4 h-4 text-amber-500 animate-pulse" />
-                Hackathon Demo Quick Switcher
-              </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                Click any profile card below to sign in instantly with verified Indian demo accounts.
-              </p>
-            </div> */}
 
-                    {/* HR Admin Card - Priya Iyer */}
-                    <button
-                      type="button"
-                      onClick={() => handleQuickDemo('admin@dayflow.com', 'admin123')}
-                      className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
-                    >
-                      <img
-                        src={demoAvatars.priya}
-                        alt="Priya Iyer"
-                        className="w-16 h-16 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-                      />
-
-                      <div className="flex flex-col items-center gap-1">
-                        <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                          Priya Iyer
+                  {/* Demo quick switcher — photo, name and role only, kept on one line */}
+                  <div className="w-full flex gap-2 mt-8">
+                    {demoAccounts.map((account) => (
+                      <button
+                        key={account.name}
+                        type="button"
+                        onClick={() => handleQuickDemo(account.email, account.password)}
+                        className="flex-1 min-w-0 p-2 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all flex flex-col items-center justify-center text-center gap-1 shadow-sm"
+                      >
+                        <img
+                          src={account.avatar}
+                          alt={account.name}
+                          className="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+                        />
+                        <h4 className="text-[11px] font-bold text-slate-900 dark:text-white leading-tight truncate w-full">
+                          {account.name}
                         </h4>
-
-                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
-                          HR Admin
+                        <span className={`text-[8px] uppercase font-bold px-1 py-0.5 rounded ${account.badgeClass}`}>
+                          {account.role}
                         </span>
-
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                          HR Manager • Bengaluru
-                        </p>
-                      </div>
-
-                      <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
-                    </button>
-
-                    {/* Employee 1 - Ananya Sharma (Engineering) */}
-                    <button
-                      type="button"
-                      onClick={() => handleQuickDemo('alex@dayflow.com', 'employee123')}
-                      className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
-                    >
-                      <img
-                        src={demoAvatars.ananya}
-                        alt="Ananya Sharma"
-                        className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-                      />
-
-                      <div className="flex flex-col items-center gap-1">
-                        <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                          Ananya Sharma
-                        </h4>
-
-                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
-                          Employee
-                        </span>
-
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                          Senior Fullstack Dev • Bengaluru
-                        </p>
-                      </div>
-
-                      <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
-                    </button>
-
-                    {/* Employee 2 - Rohan Nair (UI/UX Design) */}
-                    <button
-                      type="button"
-                      onClick={() => handleQuickDemo('elena@dayflow.com', 'employee123')}
-                      className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
-                    >
-                      <img
-                        src={demoAvatars.rohan}
-                        alt="Rohan Nair"
-                        className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-                      />
-
-                      <div className="flex flex-col items-center gap-1">
-                        <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                          Rohan Nair
-                        </h4>
-
-                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
-                          Employee
-                        </span>
-
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                          Lead UI/UX Designer • Bengaluru
-                        </p>
-                      </div>
-
-                      <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
-                    </button>
-
-                    {/* Employee 3 - Arjun Menon (Marketing) */}
-                    {/* <button
-              type="button"
-              onClick={() => handleQuickDemo('marcus@dayflow.com', 'employee123')}
-              className="w-full text-left p-3.5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 transition-all group flex items-center justify-between shadow-sm"
-            >
-              <div className="flex items-center gap-3">
-                <img
-                  src={demoAvatars.arjun}
-                  alt="Arjun Menon"
-                  className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-                />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                      Arjun Menon
-                    </h4>
-                    <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
-                      Marketing
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Marketing Director • Mumbai</p>
-                </div>
-              </div>
-              <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 group-hover:translate-x-1 transition-all" />
-            </button> */}
+                      </button>
+                    ))}
                   </div>
                 </>
               )}
@@ -525,17 +459,16 @@ const LoginPage = () => {
               {/* TAB 2: SIGN UP */}
               {authMode === 'signup' && (
                 <>
-                  <div className="min-h-screen w-full flex items-start justify-center bg-white px-6 pt-1 sm:pt-10 pb-10">
+                  <div className="min-h-fit w-full flex items-start justify-center bg-white px-6 pt-1 sm:pt-10 pb-10">
                     <div className="w-full max-w-md">
-                      <span className="text-sm font-semibold text-slate-900">LaMaya</span>
+                      <span className="text-sm font-semibold text-slate-900">LaxMaya</span>
                       <h2 className="text-2xl font-semibold text-slate-900 tracking-tight mt-6">
                         Create your account
                       </h2>
                       <p className="text-slate-500 text-sm mt-1 mb-10">
                         Register as an employee or an HR administrator.
                       </p>
-                      {/* onSubmit={handleSignupSubmit} */}
-                      <form className="relative">
+                      <form onSubmit={handleSignupSubmit} className="relative">
 
                         <div className="absolute left-[5px] top-2 bottom-2 w-px bg-slate-200" />
 
@@ -546,56 +479,64 @@ const LoginPage = () => {
                             <label className="block text-sm text-slate-500 mb-2">
                               Organization role
                             </label>
-                            <div className="space-y-2">
-                              <button
-                                type="button"
-                                onClick={() => setSignupData({ ...signupData, role: "employee" })}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-colors ${signupData.role === "employee"
-                                  ? "border-slate-900 bg-slate-50"
-                                  : "border-slate-200 hover:border-slate-300"
-                                  }`}
-                              >
-                                <User className="w-4 h-4 text-slate-700 shrink-0" />
-                                <div className="flex-1">
-                                  <p className="text-sm font-medium text-slate-900">Employee</p>
-                                  <p className="text-xs text-slate-500">Standard team member access</p>
-                                </div>
-                                <span
-                                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${signupData.role === "employee" ? "border-slate-900" : "border-slate-300"
+                            <div className="flex gap-2">
+                              {[
+                                {
+                                  value: "super_admin",
+                                  label: "Super Admin",
+                                  description: "Full system access and control",
+                                  icon: Crown,
+                                },
+                                {
+                                  value: "hr_admin",
+                                  label: "HR Admin",
+                                  description: "Manage employee records and access",
+                                  icon: Shield,
+                                },
+                                {
+                                  value: "finance_admin",
+                                  label: "Finance Admin",
+                                  description: "Manage payroll and financial data",
+                                  icon: DollarSign,
+                                },
+                                {
+                                  value: "manager",
+                                  label: "Manager",
+                                  description: "Oversee team and approve requests",
+                                  icon: Briefcase,
+                                },
+                                {
+                                  value: "employee",
+                                  label: "Employee",
+                                  description: "Standard team member access",
+                                  icon: User,
+                                },
+                              ].map(({ value, label, description, icon: Icon }) => (
+                                <button
+                                  key={value}
+                                  type="button"
+                                  onClick={() => setSignupData({ ...signupData, role: value })}
+                                  className={`flex-1 flex flex-col items-center text-center gap-2 px-3 py-3 rounded-xl border transition-colors ${signupData.role === value
+                                      ? "border-slate-900 bg-slate-50"
+                                      : "border-slate-200 hover:border-slate-300"
                                     }`}
                                 >
-                                  {signupData.role === "employee" && (
-                                    <span className="w-2 h-2 rounded-full bg-slate-900" />
-                                  )}
-                                </span>
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => setSignupData({ ...signupData, role: "admin" })}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-colors ${signupData.role === "admin"
-                                  ? "border-slate-900 bg-slate-50"
-                                  : "border-slate-200 hover:border-slate-300"
-                                  }`}
-                              >
-                                <Shield className="w-4 h-4 text-slate-700 shrink-0" />
-                                <div className="flex-1">
-                                  <p className="text-sm font-medium text-slate-900">HR / Admin</p>
-                                  <p className="text-xs text-slate-500">Manage employee records and access</p>
-                                </div>
-                                <span
-                                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${signupData.role === "admin" ? "border-slate-900" : "border-slate-300"
-                                    }`}
-                                >
-                                  {signupData.role === "admin" && (
-                                    <span className="w-2 h-2 rounded-full bg-slate-900" />
-                                  )}
-                                </span>
-                              </button>
+                                  <Icon className="w-4 h-4 text-slate-700 shrink-0" />
+                                  <div>
+                                    <p className="text-xs font-medium text-slate-900 whitespace-nowrap">{label}</p>
+                                  </div>
+                                  <span
+                                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${signupData.role === value ? "border-slate-900" : "border-slate-300"
+                                      }`}
+                                  >
+                                    {signupData.role === value && (
+                                      <span className="w-2 h-2 rounded-full bg-slate-900" />
+                                    )}
+                                  </span>
+                                </button>
+                              ))}
                             </div>
                           </div>
-
-
                           <div className="relative pl-8">
                             <span
                               className={`absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 transition-colors ${signupData.employeeId
@@ -636,7 +577,6 @@ const LoginPage = () => {
                             </div>
                           </div>
 
-
                           <div className="relative pl-8">
                             <span
                               className={`absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 transition-colors ${signupData.email
@@ -644,11 +584,11 @@ const LoginPage = () => {
                                 : "bg-white border-slate-300"
                                 }`}
                             />
-                            <label htmlFor="email" className="block text-sm text-slate-500 mb-1.5">
+                            <label htmlFor="signupEmail" className="block text-sm text-slate-500 mb-1.5">
                               Work email
                             </label>
                             <input
-                              id="email"
+                              id="signupEmail"
                               type="email"
                               required
                               value={signupData.email}
@@ -658,7 +598,6 @@ const LoginPage = () => {
                             />
                           </div>
 
-
                           <div className="relative pl-8">
                             <span
                               className={`absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 transition-colors ${signupData.password.length >= 6
@@ -666,12 +605,12 @@ const LoginPage = () => {
                                 : "bg-white border-slate-300"
                                 }`}
                             />
-                            <label htmlFor="password" className="block text-sm text-slate-500 mb-1.5">
+                            <label htmlFor="signupPassword" className="block text-sm text-slate-500 mb-1.5">
                               Password (min 6 characters)
                             </label>
                             <div className="relative">
                               <input
-                                id="password"
+                                id="signupPassword"
                                 type={showSignupPassword ? "text" : "password"}
                                 required
                                 minLength={6}
@@ -695,7 +634,6 @@ const LoginPage = () => {
                             </div>
                           </div>
 
-
                           <div className="relative pl-8">
                             <span
                               className={`absolute left-0 top-2 w-2.5 h-2.5 rounded-full border-2 transition-colors ${isSubmitting
@@ -712,7 +650,7 @@ const LoginPage = () => {
                             </div>
                             <button
                               type="submit"
-                              // disabled={isSubmitting}
+                              disabled={isSubmitting}
                               className="px-6 py-2.5 bg-slate-950 hover:bg-slate-800 text-white text-sm font-medium rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                             >
                               {isSubmitting ? (
@@ -730,219 +668,96 @@ const LoginPage = () => {
 
                       <p className="mt-14 text-sm text-slate-400">
                         Already have an account?{" "}
-                        <button className="text-slate-900 underline underline-offset-2">
+                        <button
+                          type="button"
+                          onClick={() => setAuthMode('login')}
+                          className="text-slate-900 underline underline-offset-2"
+                        >
                           Sign in
                         </button>
                       </p>
                     </div>
                   </div>
-
                 </>
               )}
 
               {/* TAB 3: VERIFY EMAIL */}
               {/* {authMode === 'verify' && (
-              <>
-                <div className="mb-5">
-                  <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    Verify Your Email
-                  </h2>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
-                    Enter your email and verification token to activate your account.
-                  </p>
-                </div>
-
-                {demoVerificationInfo && (
-                  <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 mb-4 text-xs space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 font-bold">
-                      <CheckCircle2 className="w-4 h-4" /> Demo Verification Ready
-                    </div>
-                    <p className="text-[11px] text-emerald-800 dark:text-emerald-200">
-                      Token auto-populated below for instant hackathon verification.
+                <>
+                  <div className="mb-5">
+                    <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                      Verify Your Email
+                    </h2>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
+                      Enter your email and verification token to activate your account.
                     </p>
                   </div>
-                )}
 
-                <form onSubmit={handleVerifySubmit} className="space-y-4 text-xs">
-                  <div>
-                    <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                      Account Email
-                    </label>
-                    <div className="relative">
-                      <Mail className="w-4 h-4 text-slate-400 absolute inset-y-0 left-3.5 my-auto" />
-                      <input
-                        type="email"
-                        required
-                        value={verifyEmailInput}
-                        onChange={(e) => setVerifyEmailInput(e.target.value)}
-                        placeholder="e.g. vikram@dayflow.com"
-                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-                      />
+                  {demoVerificationInfo && (
+                    <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 mb-4 text-xs space-y-1.5">
+                      <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 font-bold">
+                        <CheckCircle2 className="w-4 h-4" /> Demo Verification Ready
+                      </div>
+                      <p className="text-[11px] text-emerald-800 dark:text-emerald-200">
+                        Token auto-populated below for instant verification.
+                      </p>
                     </div>
-                  </div>
+                  )}
 
-                  <div>
-                    <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                      Verification Token
-                    </label>
-                    <div className="relative">
-                      <KeyRound className="w-4 h-4 text-slate-400 absolute inset-y-0 left-3.5 my-auto" />
-                      <input
-                        type="text"
-                        required
-                        value={verifyTokenInput}
-                        onChange={(e) => setVerifyTokenInput(e.target.value)}
-                        placeholder="Enter verification token"
-                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white font-mono text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-                      />
+                  <form onSubmit={handleVerifySubmit} className="space-y-4 text-xs">
+                    <div>
+                      <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        Account Email
+                      </label>
+                      <div className="relative">
+                        <Mail className="w-4 h-4 text-slate-400 absolute inset-y-0 left-3.5 my-auto" />
+                        <input
+                          type="email"
+                          required
+                          value={verifyEmailInput}
+                          onChange={(e) => setVerifyEmailInput(e.target.value)}
+                          placeholder="e.g. vikram@dayflow.com"
+                          className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl text-xs shadow-glow flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-                  >
-                    {isSubmitting ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <>
-                        <BadgeCheck className="w-4 h-4" />
-                        <span>Verify & Activate Account</span>
-                      </>
-                    )}
-                  </button>
-                </form>
-              </>
-            )} */}
+                    <div>
+                      <label className="block font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        Verification Token
+                      </label>
+                      <div className="relative">
+                        <KeyRound className="w-4 h-4 text-slate-400 absolute inset-y-0 left-3.5 my-auto" />
+                        <input
+                          type="text"
+                          required
+                          value={verifyTokenInput}
+                          onChange={(e) => setVerifyTokenInput(e.target.value)}
+                          placeholder="Enter verification token"
+                          className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white font-mono text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl text-xs shadow-glow flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        <>
+                          <BadgeCheck className="w-4 h-4" />
+                          <span>Verify & Activate Account</span>
+                        </>
+                      )}
+                    </button>
+                  </form>
+                </>
+              )} */}
             </div>
           </div>
-          {/* Right Column: 1-Click Demo Accounts for Hackathon Judges */}
-          {/* <div className="w-full lg:w-100 shrink-0 flex gap-3"> */}
-          {/* <div className="p-3.5 rounded-2xl bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-800/40">
-              <div className="flex items-center gap-2 text-brand-700 dark:text-brand-300 text-xs font-bold uppercase tracking-wider mb-0.5">
-                <Zap className="w-4 h-4 text-amber-500 animate-pulse" />
-                Hackathon Demo Quick Switcher
-              </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                Click any profile card below to sign in instantly with verified Indian demo accounts.
-              </p>
-            </div> */}
-
-          {/* HR Admin Card - Priya Iyer */}
-          {/* <button
-              type="button"
-              onClick={() => handleQuickDemo('admin@dayflow.com', 'admin123')}
-              className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
-            >
-              <img
-                src={demoAvatars.priya}
-                alt="Priya Iyer"
-                className="w-16 h-16 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-              />
-
-              <div className="flex flex-col items-center gap-1">
-                <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                  Priya Iyer
-                </h4>
-
-                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
-                  HR Admin
-                </span>
-
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  HR Manager • Bengaluru
-                </p>
-              </div>
-
-              <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
-            </button> */}
-
-          {/* Employee 1 - Ananya Sharma (Engineering) */}
-          {/* <button
-              type="button"
-              onClick={() => handleQuickDemo('admin@dayflow.com', 'admin123')}
-              className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
-            >
-              <img
-                src={demoAvatars.ananya}
-                alt="Ananya Sharma"
-                className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-              />
-
-              <div className="flex flex-col items-center gap-1">
-                <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                  Ananya Sharma
-                </h4>
-
-                <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
-                  Employee
-                </span>
-
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Senior Fullstack Dev • Bengaluru
-                </p>
-              </div>
-
-              <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
-            </button> */}
-
-          {/* Employee 2 - Rohan Nair (UI/UX Design) */}
-          {/* <button
-              type="button"
-              onClick={() => handleQuickDemo('admin@dayflow.com', 'admin123')}
-              className="w-1/2 aspect-square p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all group flex flex-col items-center justify-center text-center gap-3 shadow-sm"
-            >
-              <img
-                src={demoAvatars.rohan}
-                alt="Rohan Nair"
-                className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-              />
-
-              <div className="flex flex-col items-center gap-1">
-                <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                  Rohan Nair
-                </h4>
-
-                <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
-                  Employee
-                </span>
-
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Lead UI/UX Designer • Bengaluru
-                </p>
-              </div>
-
-              <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-brand-500 group-hover:translate-y-1 transition-all mt-1" />
-            </button> */}
-
-          {/* Employee 3 - Arjun Menon (Marketing) */}
-          {/* <button
-              type="button"
-              onClick={() => handleQuickDemo('marcus@dayflow.com', 'employee123')}
-              className="w-full text-left p-3.5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 transition-all group flex items-center justify-between shadow-sm"
-            >
-              <div className="flex items-center gap-3">
-                <img
-                  src={demoAvatars.arjun}
-                  alt="Arjun Menon"
-                  className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-                />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">
-                      Arjun Menon
-                    </h4>
-                    <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
-                      Marketing
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Marketing Director • Mumbai</p>
-                </div>
-              </div>
-              <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-500 group-hover:translate-x-1 transition-all" />
-            </button> */}
-          {/* </div> */}
         </div>
       </main>
 

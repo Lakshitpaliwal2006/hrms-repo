@@ -17,6 +17,7 @@ import EmployeeDashboard from './pages/employee/EmployeeDashboard';
 import MyAttendancePage from './pages/employee/MyAttendancePage';
 import MyLeavesPage from './pages/employee/MyLeavesPage';
 import MySalaryPage from './pages/employee/MySalaryPage';
+import SuperAdminDashboard from "./pages/super-admin/SuperAdminDashboard.jsx"
 
 // Root redirect handler based on authentication status & role
 const RootRedirect = () => {
@@ -73,6 +74,14 @@ function App() {
                     <Route path="/employee/leaves" element={<MyLeavesPage />} />
                     <Route path="/employee/salary" element={<MySalaryPage />} />
                     <Route path="/employee/profile" element={<ProfilePage />} />
+                  </Route>
+                </Route>
+
+                {/* Super Admin Role Protected Routes with Shared Layout */}
+                {/* element={<ProtectedRoute allowedRoles={['superadmin']} />} */}
+                <Route >
+                  <Route element={<AppLayout />}>
+                    <Route path="/superadmin" element={<SuperAdminDashboard />} />
                   </Route>
                 </Route>
 

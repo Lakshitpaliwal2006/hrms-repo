@@ -1,13 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Menu, Sun, Moon, Shield, User, Clock } from 'lucide-react';
+import { Menu, Sun, Moon, Shield, User, Users, Wallet, Clock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { format } from 'date-fns';
 import AdminEmployeeSwitcher from '../admin/AdminEmployeeSwitcher';
 
+const roleBasePath = {
+  admin: '/admin',
+  employee: '/employee',
+  superadmin: '/superadmin',
+  manager: '/manager',
+  financeadmin: '/finance',
+};
+
+const roleBadgeConfig = {
+  admin: { icon: Shield, label: 'HR Admin', color: 'text-amber-500' },
+  employee: { icon: User, label: 'Employee', color: 'text-indigo-500' },
+  superadmin: { icon: Shield, label: 'Super Admin', color: 'text-rose-500' },
+  manager: { icon: Users, label: 'Manager', color: 'text-sky-500' },
+  financeadmin: { icon: Wallet, label: 'Finance Admin', color: 'text-emerald-500' },
+};
+
 const Topbar = ({ onMenuClick }) => {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isSuperAdmin } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const location = useLocation();
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -19,19 +35,32 @@ const Topbar = ({ onMenuClick }) => {
 
   const getPageTitle = () => {
     const path = location.pathname;
+
+    // Specific paths pehle check karo
+    if (path === '/superadmin/approvals') return 'Workflow & Approvals';
+    if (path === '/manager/team') return 'My Team';
+    if (path === '/manager/reports') return 'Team Report';
+    if (path === '/finance/compensation') return 'Employee Compensation';
+    if (path === '/finance/reports') return 'Payment & Financial Reports';
+    if (path === '/superadmin/employees') return 'Employee Management';
+
     if (path.includes('/employee-view')) return 'Employee Context Inspection';
-    if (path === '/admin' || path === '/employee') return 'Dashboard Overview';
+    if (['/admin', '/employee', '/superadmin', '/manager', '/finance'].includes(path)) return 'Dashboard Overview';
     if (path.includes('/employees')) return 'Employee Directory & Onboarding';
-    if (path.includes('/attendance')) return isAdmin ? 'Company Attendance Feed' : 'My Daily Attendance';
+    if (path.includes('/attendance')) return isAdmin || isSuperAdmin ? 'Company Attendance Feed' : 'My Daily Attendance';
     if (path.includes('/leaves')) return isAdmin ? 'Leave Management & Approvals' : 'Time Off & Leave Portal';
     if (path.includes('/payroll') || path.includes('/salary')) return isAdmin ? 'Payroll Management' : 'My Monthly Payslips';
     if (path.includes('/profile')) return 'My Personal & Work Profile';
     return 'WorkZen Portal';
   };
 
+  const role = user?.role || 'employee';
+  const badgeConfig = roleBadgeConfig[role] || roleBadgeConfig.employee;
+  const BadgeIcon = badgeConfig.icon;
+  const profilePath = `${roleBasePath[role] || '/employee'}/profile`;
+
   return (
     <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3.5 flex items-center justify-between transition-colors duration-200">
-      {/* Left: Mobile hamburger & Page Title */}
       <div className="flex items-center gap-3.5">
         <button
           onClick={onMenuClick}
@@ -52,18 +81,14 @@ const Topbar = ({ onMenuClick }) => {
         </div>
       </div>
 
-      {/* Right: Admin Employee Switcher, Theme Toggle, Clock, Role Badge, and Profile Link */}
       <div className="flex items-center gap-2 sm:gap-3.5">
-        {/* Admin Employee Context Switcher */}
-        {isAdmin && <AdminEmployeeSwitcher />}
+        {(isAdmin || isSuperAdmin) && <AdminEmployeeSwitcher />}
 
-        {/* Real-time Clock */}
         <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-700 dark:text-slate-300">
           <Clock className="w-3.5 h-3.5 text-brand-500 dark:text-brand-400" />
           <span>{format(currentTime, 'EEE, dd MMM • HH:mm:ss')}</span>
         </div>
 
-        {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
           title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
@@ -76,15 +101,13 @@ const Topbar = ({ onMenuClick }) => {
           )}
         </button>
 
-        {/* Role Badge */}
         <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand-500/10 text-brand-600 dark:text-brand-300 border border-brand-500/20">
-          {isAdmin ? <Shield className="w-3.5 h-3.5 text-amber-500" /> : <User className="w-3.5 h-3.5 text-indigo-500" />}
-          <span className="capitalize">{isAdmin ? 'HR Admin' : 'Employee'}</span>
+          <BadgeIcon className={`w-3.5 h-3.5 ${badgeConfig.color}`} />
+          <span className="capitalize">{badgeConfig.label}</span>
         </div>
 
-        {/* Avatar Profile Link */}
         <Link
-          to={isAdmin ? '/admin/profile' : '/employee/profile'}
+          to={profilePath}
           className="flex items-center gap-2.5 p-1.5 pl-2.5 rounded-2xl bg-slate-100 dark:bg-slate-850 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition-all group"
         >
           <div className="text-right hidden sm:block">

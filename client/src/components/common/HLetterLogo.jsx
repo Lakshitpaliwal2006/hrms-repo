@@ -65,7 +65,7 @@ export const HLetterLogo = ({
       <div className="flex flex-col">
         <div className="flex items-center gap-2">
           <span className={`text-2xl font-black tracking-tight ${isDark ? "text-zinc-200" : "text-slate-700"} dark:text-zinc-200 font-display`}>
-            Hum<span className="text-rose-500 dark:text-rose-400">nex</span>
+            Lax<span className="text-rose-500 dark:text-rose-400">Maya</span>
           </span>
           {/* {showBadge && (
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-600 dark:text-rose-300 border border-rose-500/30 uppercase tracking-wider">

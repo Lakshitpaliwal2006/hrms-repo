@@ -21,6 +21,7 @@ import {
 
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
+import { HLetterLogo } from "../common/HLetterLogo";
 import { HLetterIcon } from "../common/HLetterLogo";
 
 // Role -> nav items mapping
@@ -63,6 +64,7 @@ const navConfig = {
   ],
 };
 
+// Role -> header subtitle
 const roleLabels = {
   admin: "Admin Operations",
   employee: "Employee Workspace",
@@ -71,6 +73,7 @@ const roleLabels = {
   financeadmin: "Finance Workspace",
 };
 
+// Role -> bottom badge color + fallback designation text
 const roleBadgeStyles = {
   admin: "bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/20",
   employee: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20",
@@ -91,41 +94,8 @@ const Sidebar = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
+
   const [isCollapsed, setIsCollapsed] = useState(false);
-
-
-  const currentPath = location.pathname.toLowerCase();
-
-  let activeRole = "";
-
-  if (currentPath.startsWith("/superadmin")) {
-    activeRole = "superadmin";
-  } else if (currentPath.startsWith("/finance")) {
-    activeRole = "financeadmin";
-  } else if (currentPath.startsWith("/manager")) {
-    activeRole = "manager";
-  } else if (currentPath.startsWith("/admin")) {
-    activeRole = "admin";
-  } else if (currentPath.startsWith("/employee")) {
-    activeRole = "employee";
-  } else {
-    // Agar path kisi role route se start nahi hota, to user.role fallback use karein
-    const rawRole = String(user?.role || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[-_ ]/g, "");
-
-    const roleMap = {
-      admin: "admin",
-      employee: "employee",
-      superadmin: "superadmin",
-      manager: "manager",
-      financeadmin: "financeadmin",
-    };
-
-    activeRole = roleMap[rawRole] || "employee";
-  }
-
 
   const handleLogout = async () => {
     await logout();
@@ -133,16 +103,30 @@ const Sidebar = ({ isOpen, onClose }) => {
     navigate("/login");
   };
 
-  // Improved Role Normalization Logic
-  const role = activeRole;
-  const navItems = navConfig[role] || navConfig.employee;
+
+const rawRole = user?.role || "employee";
+
+const roleMap = {
+  admin: "admin",
+  employee: "employee",
+  superadmin: "superadmin",
+  manager: "manager",
+  finance_admin: "financeadmin",
+};
+
+
+
+const role = roleMap[rawRole.toLowerCase()] || "employee";
+// const role = user?.role || "employee";
+const navItems = navConfig[role] || navConfig.employee;
+  // const navItems = navConfig[role] || navConfig.employee;
   const subtitle = roleLabels[role] || "Workspace";
   const badgeStyle = roleBadgeStyles[role] || roleBadgeStyles.employee;
   const designationFallback = roleDesignationFallback[role] || "Team Member";
-
+// console.log(navItems.label)
   return (
     <>
-      
+      {/* MOBILE BACKDROP */}
       {isOpen && (
         <div
           onClick={onClose}
@@ -150,7 +134,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         />
       )}
 
-
+      {/* SIDEBAR */}
       <aside
         className={`
           fixed top-0 bottom-0 left-0 z-50
@@ -176,16 +160,13 @@ const Sidebar = ({ isOpen, onClose }) => {
             {isCollapsed ? (
               <button
                 type="button"
-                onClick={() => {
-                  onClose?.();
-                  setIsCollapsed(false);
-                }}
+                onClick={() => setIsCollapsed(false)}
                 className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 group"
                 title="Open Sidebar"
                 aria-label="Open Sidebar"
               >
                 <span className="absolute inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity duration-200 pointer-events-none">
-                  <HLetterIcon size={38} />
+                  <HLogoIcon size={38} />
                 </span>
                 <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
                   <PanelLeftOpen className="w-6 h-6 text-slate-600 dark:text-slate-300" />
@@ -239,6 +220,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
             {navItems.map((item) => {
               const Icon = item.icon;
+              // console.log(item)
               return (
                 <NavLink
                   key={item.path}
@@ -247,9 +229,10 @@ const Sidebar = ({ isOpen, onClose }) => {
                   onClick={() => onClose?.()}
                   title={isCollapsed ? item.label : undefined}
                   className={({ isActive }) =>
-                    `flex items-center ${isCollapsed ? "justify-center px-2" : "justify-between px-3.5"} py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group ${isActive
-                      ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-glow"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                    `flex items-center ${isCollapsed ? "justify-center px-2" : "justify-between px-3.5"} py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 group ${
+                      isActive
+                        ? "bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-glow"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60"
                     }`
                   }
                 >
@@ -257,10 +240,11 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <>
                       <div className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3"}`}>
                         <Icon
-                          className={`w-4 h-4 shrink-0 transition-colors ${isActive
-                            ? "text-white"
-                            : "text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200"
-                            }`}
+                          className={`w-4 h-4 shrink-0 transition-colors ${
+                            isActive
+                              ? "text-white"
+                              : "text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200"
+                          }`}
                         />
                         {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
                       </div>
@@ -276,8 +260,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* BOTTOM USER SECTION */}
         <div className={`border-t border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/40 ${isCollapsed ? "p-3" : "p-4"}`}>
           <div
-            className={`rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center ${isCollapsed ? "justify-center p-2" : "justify-between p-3 mb-3"
-              }`}
+            className={`rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center ${
+              isCollapsed ? "justify-center p-2" : "justify-between p-3 mb-3"
+            }`}
           >
             <div className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 min-w-0"}`}>
               {user?.avatar ? (
@@ -314,8 +299,9 @@ const Sidebar = ({ isOpen, onClose }) => {
             onClick={handleLogout}
             title={isCollapsed ? "Sign Out" : undefined}
             aria-label="Sign Out"
-            className={`w-full py-2.5 px-3 rounded-xl bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-800 hover:border-rose-300 dark:hover:border-rose-500/40 text-slate-700 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-300 text-xs font-semibold flex items-center ${isCollapsed ? "justify-center" : "justify-center gap-2"
-              } transition-all group shadow-sm`}
+            className={`w-full py-2.5 px-3 rounded-xl bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-800 hover:border-rose-300 dark:hover:border-rose-500/40 text-slate-700 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-300 text-xs font-semibold flex items-center ${
+              isCollapsed ? "justify-center" : "justify-center gap-2"
+            } transition-all group shadow-sm`}
           >
             <LogOut className="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 shrink-0" />
             {!isCollapsed && <span>Sign Out</span>}
