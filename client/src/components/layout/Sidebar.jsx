@@ -100,7 +100,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   if (currentPath.startsWith("/superadmin")) {
     activeRole = "superadmin";
-  } else if (currentPath.startsWith("/finance")) {
+  } else if (currentPath.startsWith("/financeadmin")) {
     activeRole = "financeadmin";
   } else if (currentPath.startsWith("/manager")) {
     activeRole = "manager";

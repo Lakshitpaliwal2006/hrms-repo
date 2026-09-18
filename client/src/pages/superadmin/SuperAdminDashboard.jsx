@@ -40,7 +40,20 @@ const severityDot = {
   critical: "bg-rose-500",
 };
 
-const tabs = ["Departments","Organizations",];
+const tabs = ["Departments", "Organizations",];
+
+const departments = [
+  { name: 'Inventory', hod: 'Mitchum Daniel', totalMembers: '06', createdOn: '24 Dec 2024', status: 'Active' },
+  { name: 'Human Resources', hod: 'Susan Lopez', totalMembers: '10', createdOn: '10 Dec 2024', status: 'Active' },
+  { name: 'Admin', hod: 'Robert Grossman', totalMembers: '05', createdOn: '27 Nov 2024', status: 'Active' },
+  { name: 'Sales', hod: 'Janet Hembre', totalMembers: '10', createdOn: '18 Nov 2024', status: 'Active' },
+  { name: 'Marketing', hod: 'Russell Belle', totalMembers: '06', createdOn: '06 Nov 2024', status: 'Active' },
+  { name: 'Quality Assurance', hod: 'Edward Muniz', totalMembers: '12', createdOn: '25 Oct 2024', status: 'Active' },
+  { name: 'Finance', hod: 'Susan Moore', totalMembers: '08', createdOn: '14 Oct 2024', status: 'Active' },
+  { name: 'Maintenance', hod: 'Travis Marcotte', totalMembers: '07', createdOn: '03 Oct 2024', status: 'Active' },
+  { name: 'R&D', hod: 'Travis Marcotte', totalMembers: '10', createdOn: '20 Sep 2024', status: 'Active' },
+  { name: 'IT Support', hod: 'Malinda Ruiz', totalMembers: '10', createdOn: '10 Sep 2024', status: 'Inactive' },
+];
 
 export default function SuperAdminDashboard() {
   const [activeTab, setActiveTab] = useState("Organizations");
@@ -157,11 +170,10 @@ export default function SuperAdminDashboard() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`relative pb-3 text-sm whitespace-nowrap transition-colors ${
-                  activeTab === tab
-                    ? "text-slate-900 dark:text-white font-medium"
-                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                }`}
+                className={`relative pb-3 text-sm whitespace-nowrap transition-colors ${activeTab === tab
+                  ? "text-slate-900 dark:text-white font-medium"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                  }`}
               >
                 {tab}
                 {activeTab === tab && (
@@ -171,11 +183,153 @@ export default function SuperAdminDashboard() {
             ))}
           </div>
         </div>
+        {activeTab === "Departments" && (<>
+          <div className="p-5 sm:p-6 space-y-4">
+            {/* Page header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h1 className="text-xl font-bold text-[#132a43] dark:text-white">Departments</h1>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Dashboard <span className="mx-1">›</span> <span className="text-[#1d7089] font-medium">Departments</span>
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 p-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                  <button className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">↻</button>
+                </div>
+                <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-[#1d7089] to-[#132a43] text-white text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity">
+                  + Add Department
+                </button>
+              </div>
+            </div>
 
+            {/* Table card */}
+            <div className="rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+              {/* Toolbar */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+                <div className="relative w-full max-w-xs">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm text-[#132a43] dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1d7089]/30"
+                  />
+                </div>
+                <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">
+                  Status ▾
+                </button>
+              </div>
+
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-slate-50 dark:bg-slate-950/60 text-left text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                      <th className="px-5 py-3 w-10"><input type="checkbox" className="rounded border-slate-300" /></th>
+                      <th className="px-5 py-3">Department</th>
+                      <th className="px-5 py-3">HOD</th>
+                      <th className="px-5 py-3">Members</th>
+                      <th className="px-5 py-3">Total Members ↑</th>
+                      <th className="px-5 py-3">Created On ↑</th>
+                      <th className="px-5 py-3">Status</th>
+                      <th className="px-5 py-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {departments.map((dept, idx) => (
+                      <tr
+                        key={dept.name}
+                        className="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-50/60 dark:hover:bg-slate-950/40 transition-colors"
+                      >
+                        <td className="px-5 py-3.5"><input type="checkbox" className="rounded border-slate-300" /></td>
+                        <td className="px-5 py-3.5 font-semibold text-[#132a43] dark:text-white">{dept.name}</td>
+                        <td className="px-5 py-3.5">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-7 h-7 rounded-full bg-[#eaf1f5] dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold text-[#132a43] dark:text-slate-300">
+                              {dept.hod.split(' ').map((w) => w[0]).join('')}
+                            </div>
+                            <span className="text-slate-600 dark:text-slate-300">{dept.hod}</span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <div className="flex items-center -space-x-2">
+                            {[0, 1, 2].map((i) => (
+                              <div
+                                key={i}
+                                className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 border-2 border-white dark:border-slate-900"
+                              />
+                            ))}
+                            <div className="w-6 h-6 rounded-full bg-[#132a43] text-white text-[9px] font-semibold flex items-center justify-center border-2 border-white dark:border-slate-900">
+                              +{dept.totalMembers}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{dept.totalMembers}</td>
+                        <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{dept.createdOn}</td>
+                        <td className="px-5 py-3.5">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold border ${dept.status === 'Active'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/20'
+                              : 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-300 dark:border-rose-500/20'
+                              }`}
+                          >
+                            {dept.status}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <div className="flex items-center justify-end gap-2">
+                            <button className="w-7 h-7 rounded-md flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[#1d7089]">✎</button>
+                            <button className="w-7 h-7 rounded-md flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-rose-500">🗑</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination footer */}
+              <div className="flex items-center justify-between px-5 py-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+                <div className="flex items-center gap-2">
+                  Row Per Page
+                  <select className="px-2 py-1 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                    <option>10</option>
+                    <option>25</option>
+                    <option>50</option>
+                  </select>
+                  Entries
+                </div>
+                <div className="flex items-center gap-1">
+                  <button className="w-7 h-7 rounded-md flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">‹</button>
+                  {[1, 2, 3].map((n) => (
+                    <button
+                      key={n}
+                      className={`w-7 h-7 rounded-md flex items-center justify-center font-semibold ${n === 1
+                        ? 'bg-[#132a43] text-white'
+                        : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        }`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                  <span className="px-1">…</span>
+                  <button className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">15</button>
+                  <button className="w-7 h-7 rounded-md flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">›</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>)}
         {/* Tab content */}
         {activeTab === "Organizations" && (
           <div className="bg-white dark:bg-[#171D19] border border-slate-200 dark:border-white/10 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-6">
+              <div>
+                <h1 className="text-xl font-bold text-[#132a43] dark:text-white">Organisation</h1>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Dashboard <span className="mx-1">›</span> <span className="text-[#1d7089] font-medium">Organisation</span>
+                </p>
+              </div>
               <div className="flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                 <h2 className="font-serif font-semibold text-base text-slate-900 dark:text-white">
