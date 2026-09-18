@@ -201,13 +201,13 @@ const EmployeeDashboard = () => {
   const activityIconTint = (type) => {
     switch (type) {
       case 'attendance':
-        return 'bg-[#dceeea] text-[#356f6a] dark:bg-[#438b87]/20 dark:text-[#8fc9bf]';
+        return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400';
       case 'leave':
-        return 'bg-[#d9edf5] text-[#246b8f] dark:bg-[#2b91b0]/20 dark:text-[#8ac9df]';
+        return 'bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300';
       case 'salary':
         return 'bg-[#eaf1f5] text-[#132a43] dark:bg-slate-500/10 dark:text-slate-300';
       case 'document':
-        return 'bg-[#d9edf5] text-[#246b8f] dark:bg-[#2b91b0]/20 dark:text-[#8ac9df]';
+        return 'bg-sky-50 text-sky-600 dark:bg-sky-500/10 dark:text-sky-400';
       default:
         return 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400';
     }
@@ -218,64 +218,71 @@ const EmployeeDashboard = () => {
       case 'emerald':
         return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/20';
       case 'rose':
-        return 'bg-[#f4e4e6] text-[#a45e68] border-[#e7c7cc] dark:bg-[#a45e68]/20 dark:text-[#e5a6ae] dark:border-[#a45e68]/30';
+        return 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-300 dark:border-rose-500/20';
       case 'teal':
         return 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-500/10 dark:text-teal-300 dark:border-teal-500/20';
       default:
-        return 'bg-[#e9edf0] text-[#8b6b3f] border-[#d4dfe5] dark:bg-[#607f91]/20 dark:text-[#d8b477] dark:border-[#607f91]/30';
+        return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/20';
     }
   };
 
   const today = new Date();
 
   return (
-    <div className="space-y-5 sm:space-y-6 bg-[#f4f8fb] dark:bg-[#142b3d] -m-2 p-2 sm:p-4 rounded-3xl">
-      {/* Employee summary header */}
-      <section className="relative overflow-hidden rounded-2xl border border-[#d4e1e8] dark:border-[#36566a] bg-white dark:bg-[#203f52] shadow-sm">
-        <span className="absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b from-[#2b91b0] via-[#527f99] to-[#19344d]" />
-        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 px-5 sm:px-7 py-5 sm:py-6">
-          <div className="pl-2">
-            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#2b91b0] dark:text-[#8ac9df] mb-2">
-              <Sparkles className="w-3.5 h-3.5" />
-              Employee workspace · {user?.employeeId || 'EMPLOYEE'}
-            </div>
-            <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#19344d] dark:text-white leading-tight">
-              Welcome back, {user?.name || 'Employee'}
-            </h1>
-            <p className="text-[#6d8797] dark:text-[#a9c0cc] text-sm mt-1.5">
-              {user?.designation || 'Team member'} · {user?.department || 'Department'} · {format(today, 'EEEE, MMM d')}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-7 gap-y-4 xl:border-l xl:border-[#d4e1e8] dark:xl:border-[#36566a] xl:pl-7">
-            <SummaryMetric value={totalLeaveBalance} label="Leave days left" />
-            <SummaryMetric value={daysPresent} label="Days present" accent="teal" />
-            <SummaryMetric value={pendingLeavesCount} label="Pending requests" accent="amber" />
-            <button
-              onClick={() => setLeaveModalOpen(true)}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#19344d] hover:bg-[#102638] text-white text-xs font-bold transition-colors shadow-sm"
-            >
-              <Plus className="w-4 h-4" />
-              Apply time off
-            </button>
-          </div>
+    <div className="space-y-5 sm:space-y-6">
+      {/* Header bar */}
+      <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 p-6 sm:p-7 shadow-sm overflow-hidden">
+        <span className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#123049] to-[#1d7089]" />
+        <div className="pl-2">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#1d7089] dark:text-teal-400 mb-2">
+            <Sparkles className="w-3.5 h-3.5" />
+            Employee Portal · {user?.employeeId}
+          </span>
+          <h1 className="text-2xl sm:text-[28px] font-bold text-[#132a43] dark:text-white leading-tight">
+            Welcome back, {user?.name}
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+            {user?.designation} · {user?.department} · {format(today, 'EEEE, MMM d')}
+          </p>
         </div>
-      </section>
 
-      {/* Segmented KPI strip */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 overflow-hidden rounded-2xl border border-[#d4e1e8] dark:border-[#36566a] bg-white dark:bg-[#203f52] shadow-sm">
+        <div className="flex items-center gap-6 pl-2 md:pl-6 md:border-l md:border-slate-200 dark:md:border-slate-800">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-[#132a43] dark:text-white">{totalLeaveBalance}</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Leave days left</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{daysPresent}</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Days present</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{pendingLeavesCount}</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Pending requests</div>
+          </div>
+          <button
+            onClick={() => setLeaveModalOpen(true)}
+            className="ml-2 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#132a43] hover:bg-[#0d1e30] text-white text-xs font-semibold transition-colors shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            Apply time off
+          </button>
+        </div>
+      </div>
+
+      {/* KPI cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           label="Available leave"
           icon={<CalendarDays className="w-[18px] h-[18px]" />}
-          tint="bg-[#dceeea] text-[#356f6a] dark:bg-[#438b87]/20 dark:text-[#8fc9bf]"
+          tint="bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
           value={totalLeaveBalance}
           suffix="days"
           note={`${user?.leaveBalance?.paid || 0} paid · ${user?.leaveBalance?.sick || 0} sick`}
         />
         <KpiCard
-          label="Attendance · 30 days"
+          label="Present (30d)"
           icon={<Clock className="w-[18px] h-[18px]" />}
-          tint="bg-[#d9edf5] text-[#246b8f] dark:bg-[#2b91b0]/20 dark:text-[#8ac9df]"
+          tint="bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300"
           value={daysPresent}
           suffix="days"
           note={`${totalHours} total hours worked`}
@@ -283,7 +290,7 @@ const EmployeeDashboard = () => {
         <KpiCard
           label="Take-home pay"
           icon={<DollarSign className="w-[18px] h-[18px]" />}
-          tint="bg-[#e5edf2] text-[#19344d] dark:bg-[#607f91]/20 dark:text-[#b4c9d3]"
+          tint="bg-[#eaf1f5] text-[#132a43] dark:bg-slate-500/10 dark:text-slate-300"
           value={`₹${netPay.toLocaleString('en-IN')}`}
           note={`Disbursed · ${latestPayslip?.month ? `Month ${latestPayslip.month}` : 'August'}`}
           positive
@@ -291,134 +298,144 @@ const EmployeeDashboard = () => {
         <KpiCard
           label="Pending requests"
           icon={<HeartHandshake className="w-[18px] h-[18px]" />}
-          tint="bg-[#e9edf0] text-[#607f91] dark:bg-[#607f91]/20 dark:text-[#b4c9d3]"
+          tint="bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"
           value={pendingLeavesCount}
           note={pendingLeavesCount > 0 ? 'Awaiting HR review' : 'Nothing pending'}
         />
-      </section>
+      </div>
 
-      {/* Attendance action */}
-      <section className="rounded-2xl border border-[#d4e1e8] dark:border-[#36566a] bg-white dark:bg-[#203f52] shadow-sm overflow-hidden">
-        <div className="px-5 sm:px-6 py-4 border-b border-[#e1ebf0] dark:border-[#36566a] flex items-center justify-between gap-3">
-          <div>
-            <h2 className="text-sm font-bold text-[#19344d] dark:text-white">Today’s attendance</h2>
-            <p className="text-xs text-[#6d8797] dark:text-[#a9c0cc] mt-1">Record your workday and keep your attendance updated.</p>
-          </div>
-          <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-[#438b87]">
-            <span className="w-2 h-2 rounded-full bg-[#438b87]" /> Live
-          </div>
-        </div>
-        <div className="p-4 sm:p-5">
-          <CheckInOutWidget onAttendanceChange={fetchDashboardData} />
-        </div>
-      </section>
+      {/* Check in / out */}
+      <CheckInOutWidget onAttendanceChange={fetchDashboardData} />
 
-      {/* Main navigation and content */}
-      <section className="rounded-2xl border border-[#d4e1e8] dark:border-[#36566a] bg-white dark:bg-[#203f52] shadow-sm overflow-hidden">
-        <div className="flex items-center gap-2 px-4 sm:px-6 pt-3 overflow-x-auto border-b border-[#d4e1e8] dark:border-[#36566a]">
+      {/* Tab nav bar */}
+      <div className="rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div className="flex items-center gap-1 px-3 pt-3 overflow-x-auto">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors ${
+              className={`relative px-4 py-2.5 text-xs font-semibold rounded-t-lg whitespace-nowrap transition-colors ${
                 activeTab === tab.id
-                  ? 'text-[#19344d] dark:text-white'
-                  : 'text-[#6d8797] dark:text-[#a9c0cc] hover:text-[#2b91b0] dark:hover:text-[#8ac9df]'
+                  ? 'text-[#132a43] dark:text-white'
+                  : 'text-slate-400 dark:text-slate-500 hover:text-[#1d7089] dark:hover:text-teal-400'
               }`}
             >
               {tab.label}
               {activeTab === tab.id && (
-                <span className="absolute left-1 right-1 -bottom-px h-[3px] rounded-t-full bg-gradient-to-r from-[#19344d] to-[#2b91b0]" />
+                <span className="absolute left-2 right-2 -bottom-px h-[2.5px] rounded-full bg-gradient-to-r from-[#132a43] to-[#1d7089]" />
               )}
             </button>
           ))}
         </div>
+        <div className="border-b border-slate-200 dark:border-slate-800" />
 
         <div className="p-5 sm:p-6">
+          {/* Overview tab */}
           {activeTab === 'overview' && (
-            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-base font-bold text-[#19344d] dark:text-white">Weekly attendance</h3>
-                    <p className="text-xs text-[#6d8797] dark:text-[#a9c0cc] mt-1">Your latest attendance pattern at a glance.</p>
-                  </div>
-                  <Link to="/employee/attendance" className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-[#2b91b0] hover:underline">
-                    View calendar <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+              <div className="lg:col-span-2">
                 <WeeklyGrid weeklyHistory={weeklyHistory} />
               </div>
               <ShortcutsPanel />
             </div>
           )}
 
+          {/* Attendance tab */}
           {activeTab === 'attendance' && (
             <div className="space-y-4">
               <WeeklyGrid weeklyHistory={weeklyHistory} />
-              <Link to="/employee/attendance" className="inline-flex items-center gap-1.5 text-xs font-bold text-[#2b91b0] hover:underline">
-                View full attendance calendar <ArrowRight className="w-3.5 h-3.5" />
+              <Link
+                to="/employee/attendance"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1d7089] dark:text-teal-400 hover:underline"
+              >
+                View full attendance calendar
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           )}
 
+          {/* Activity tab */}
           {activeTab === 'activity' && (
-            <ActivityFeed loading={loadingDashboard} activities={recentActivities} getActivityIcon={getActivityIcon} activityIconTint={activityIconTint} statusPillClasses={statusPillClasses} />
+            <ActivityFeed
+              loading={loadingDashboard}
+              activities={recentActivities}
+              getActivityIcon={getActivityIcon}
+              activityIconTint={activityIconTint}
+              statusPillClasses={statusPillClasses}
+            />
           )}
 
+          {/* Shortcuts tab */}
           {activeTab === 'shortcuts' && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <ShortcutLink to="/employee/leaves" icon={<Calendar className="w-4 h-4" />} tint="bg-[#d9edf5] text-[#246b8f]" title="Time off portal" subtitle="Apply leave & view history" />
-              <ShortcutLink to="/employee/salary" icon={<DollarSign className="w-4 h-4" />} tint="bg-[#dceeea] text-[#356f6a]" title="My salary payslips" subtitle="View breakdown & taxes" />
-              <ShortcutLink to="/employee/profile" icon={<User className="w-4 h-4" />} tint="bg-[#e5edf2] text-[#19344d]" title="Profile & contacts" subtitle="Emergency & personal info" />
+              <ShortcutLink
+                to="/employee/leaves"
+                icon={<Calendar className="w-4 h-4" />}
+                tint="bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300"
+                title="Time off portal"
+                subtitle="Apply leave & view history"
+              />
+              <ShortcutLink
+                to="/employee/salary"
+                icon={<DollarSign className="w-4 h-4" />}
+                tint="bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
+                title="My salary payslips"
+                subtitle="View breakdown & taxes"
+              />
+              <ShortcutLink
+                to="/employee/profile"
+                icon={<User className="w-4 h-4" />}
+                tint="bg-[#eaf1f5] text-[#132a43] dark:bg-slate-500/10 dark:text-slate-300"
+                title="Profile & contacts"
+                subtitle="Emergency & personal info"
+              />
             </div>
           )}
         </div>
-      </section>
+      </div>
 
-      {/* Recent activity preview */}
+      {/* Recent activity quick-glance, shown when not already on that tab */}
       {activeTab !== 'activity' && (
-        <section className="rounded-2xl border border-[#d4e1e8] dark:border-[#36566a] bg-white dark:bg-[#203f52] shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-[#e1ebf0] dark:border-[#36566a]">
+        <div className="rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-[#d9edf5] text-[#246b8f] dark:bg-[#2b91b0]/20 dark:text-[#8ac9df] flex items-center justify-center"><BellRing className="w-4 h-4" /></div>
-              <div>
-                <h3 className="text-sm font-bold text-[#19344d] dark:text-white">Recent activity</h3>
-                <p className="text-[11px] text-[#6d8797] dark:text-[#a9c0cc] mt-0.5">Your latest account updates</p>
+              <div className="w-8 h-8 rounded-lg bg-[#eaf1f5] text-[#132a43] dark:bg-teal-500/10 dark:text-teal-400 flex items-center justify-center">
+                <BellRing className="w-4 h-4" />
               </div>
+              <h3 className="text-sm font-semibold text-[#132a43] dark:text-white">Recent activity</h3>
             </div>
-            <button onClick={() => setActiveTab('activity')} className="text-xs font-bold text-[#2b91b0] hover:underline flex items-center gap-1">
-              See all <ArrowRight className="w-3.5 h-3.5" />
+            <button
+              onClick={() => setActiveTab('activity')}
+              className="text-xs font-semibold text-[#1d7089] dark:text-teal-400 hover:underline flex items-center gap-1"
+            >
+              See all
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
-          <div className="p-5 sm:p-6">
-            <ActivityFeed loading={loadingDashboard} activities={recentActivities.slice(0, 3)} getActivityIcon={getActivityIcon} activityIconTint={activityIconTint} statusPillClasses={statusPillClasses} />
+          <div className="p-5">
+            <ActivityFeed
+              loading={loadingDashboard}
+              activities={recentActivities.slice(0, 3)}
+              getActivityIcon={getActivityIcon}
+              activityIconTint={activityIconTint}
+              statusPillClasses={statusPillClasses}
+            />
           </div>
-        </section>
+        </div>
       )}
 
-      <ApplyLeaveModal isOpen={leaveModalOpen} onClose={() => setLeaveModalOpen(false)} onSuccess={fetchDashboardData} userBalance={user?.leaveBalance || { paid: 14, sick: 7, unpaid: 0 }} />
-    </div>
-  );
-};
-
-const SummaryMetric = ({ value, label, accent = 'navy' }) => {
-  const valueClass = accent === 'teal'
-    ? 'text-[#438b87] dark:text-[#8fc9bf]'
-    : accent === 'amber'
-    ? 'text-[#b07a2b] dark:text-[#d8b477]'
-    : 'text-[#19344d] dark:text-white';
-
-  return (
-    <div className="text-left sm:text-center min-w-[86px]">
-      <div className={`text-xl sm:text-2xl font-bold leading-none ${valueClass}`}>{value}</div>
-      <div className="text-[10px] sm:text-[11px] text-[#8ba0af] dark:text-[#a9c0cc] mt-1.5 whitespace-nowrap">{label}</div>
+      <ApplyLeaveModal
+        isOpen={leaveModalOpen}
+        onClose={() => setLeaveModalOpen(false)}
+        onSuccess={fetchDashboardData}
+        userBalance={user?.leaveBalance || { paid: 14, sick: 7, unpaid: 0 }}
+      />
     </div>
   );
 };
 
 const KpiCard = ({ label, icon, tint, value, suffix, note, positive }) => (
-  <div className="p-5 rounded-2xl bg-white dark:bg-[#203f52] border border-[#d4e1e8] dark:border-[#36566a] shadow-sm">
+  <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm">
     <div className="flex items-center justify-between mb-3">
       <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">{label}</span>
       <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${tint}`}>{icon}</div>
@@ -435,7 +452,7 @@ const KpiCard = ({ label, icon, tint, value, suffix, note, positive }) => (
 const ShortcutLink = ({ to, icon, tint, title, subtitle }) => (
   <Link
     to={to}
-    className="p-3.5 rounded-xl bg-[#f1f6f9] dark:bg-[#183548] hover:bg-[#e5edf2] dark:hover:bg-[#29485b] border border-[#e1ebf0] dark:border-[#36566a] transition-colors flex items-center justify-between group"
+    className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 hover:bg-slate-100 dark:hover:bg-slate-900 border border-slate-100 dark:border-slate-800 transition-colors flex items-center justify-between group"
   >
     <div className="flex items-center gap-3">
       <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${tint}`}>{icon}</div>
@@ -454,14 +471,14 @@ const ShortcutsPanel = () => (
     <ShortcutLink
       to="/employee/leaves"
       icon={<Calendar className="w-4 h-4" />}
-      tint="bg-[#d9edf5] text-[#246b8f] dark:bg-[#2b91b0]/20 dark:text-[#8ac9df]"
+      tint="bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-300"
       title="Time off portal"
       subtitle="Apply leave & view history"
     />
     <ShortcutLink
       to="/employee/salary"
       icon={<DollarSign className="w-4 h-4" />}
-      tint="bg-[#dceeea] text-[#356f6a] dark:bg-[#438b87]/20 dark:text-[#8fc9bf]"
+      tint="bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
       title="My salary payslips"
       subtitle="View breakdown & taxes"
     />
@@ -489,7 +506,7 @@ const WeeklyGrid = ({ weeklyHistory }) => (
           className={`p-3 rounded-xl border flex flex-col items-center justify-between gap-1.5 text-center min-h-[92px] transition-colors ${
             day.isToday
               ? 'bg-[#eaf1f5] dark:bg-teal-500/10 border-[#c7dbe3] dark:border-teal-500/30'
-              : 'bg-[#f1f6f9] dark:bg-[#183548] border-[#e1ebf0] dark:border-[#36566a]'
+              : 'bg-slate-50 dark:bg-slate-950/60 border-slate-100 dark:border-slate-800'
           }`}
         >
           <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase">
@@ -503,10 +520,10 @@ const WeeklyGrid = ({ weeklyHistory }) => (
               day.status === 'Present'
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/20'
                 : day.status === 'Half-day'
-                ? 'bg-[#e9edf0] text-[#8b6b3f] border-[#d4dfe5] dark:bg-[#607f91]/20 dark:text-[#d8b477] dark:border-[#607f91]/30'
+                ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/20'
                 : day.status === 'Leave'
                 ? 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-500/10 dark:text-teal-300 dark:border-teal-500/20'
-                : 'bg-slate-100 text-slate-500 border-[#c4d6df] dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'
+                : 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'
             }`}
           >
             {day.status || 'Present'}
@@ -529,7 +546,7 @@ const ActivityFeed = ({ loading, activities, getActivityIcon, activityIconTint, 
 
   if (activities.length === 0) {
     return (
-      <div className="py-8 text-center text-xs text-slate-500 dark:text-slate-400 rounded-xl bg-slate-50 dark:bg-slate-950 border border-[#e1ebf0] dark:border-[#36566a]">
+      <div className="py-8 text-center text-xs text-slate-500 dark:text-slate-400 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
         Nothing here yet — punches, leave updates and payslips will show up once they happen.
       </div>
     );
@@ -540,7 +557,7 @@ const ActivityFeed = ({ loading, activities, getActivityIcon, activityIconTint, 
       {activities.map((act) => (
         <div
           key={act.id}
-          className="p-3.5 rounded-xl border border-[#e1ebf0] dark:border-[#36566a] hover:border-[#c4d6df] dark:hover:border-slate-700 hover:bg-[#f1f6f9] dark:hover:bg-[#183548] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+          className="p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50/60 dark:hover:bg-slate-950/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
         >
           <div className="flex items-start sm:items-center gap-3 min-w-0">
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${activityIconTint(act.type)}`}>
@@ -552,7 +569,7 @@ const ActivityFeed = ({ loading, activities, getActivityIcon, activityIconTint, 
             </div>
           </div>
 
-          <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#e1ebf0] dark:border-[#36566a]">
+          <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
             <span className="text-[10.5px] text-slate-400 dark:text-slate-500 tabular-nums">
               {format(act.timestamp, 'dd MMM · hh:mm a')}
             </span>
