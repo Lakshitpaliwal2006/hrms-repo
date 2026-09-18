@@ -21,12 +21,12 @@ const LeaveApprovalPage = () => {
   const [department, setDepartment] = useState('All');
   const [search, setSearch] = useState('');
 
-  // Decision Modal state
+  // Selected leave for the right-hand detail panel (replaces the modal)
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [decisionType, setDecisionType] = useState('Approved');
   const [adminComment, setAdminComment] = useState('');
-  const [showModal, setShowModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [editingDecision, setEditingDecision] = useState(false);
 
   const toast = useToast();
 
@@ -40,8 +40,17 @@ const LeaveApprovalPage = () => {
 
       const res = await api.get('/leaves/all', { params });
       if (res.data.success) {
-        setLeaves(res.data.leaves || []);
+        const list = res.data.leaves || [];
+        setLeaves(list);
         if (res.data.stats) setStats(res.data.stats);
+
+        // Keep selection in sync with the current list, default to first item
+        if (list.length > 0) {
+          const stillExists = list.find((l) => l._id === selectedLeave?._id);
+          selectLeave(stillExists || list[0]);
+        } else {
+          setSelectedLeave(null);
+        }
       }
     } catch (error) {
       toast.error('Failed to load leave requests');
@@ -52,6 +61,7 @@ const LeaveApprovalPage = () => {
 
   useEffect(() => {
     fetchLeaves();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter, department]);
 
   // Debounced search
@@ -60,17 +70,28 @@ const LeaveApprovalPage = () => {
       fetchLeaves();
     }, 300);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  const openDecisionModal = (leave, type) => {
+  const selectLeave = (leave) => {
     setSelectedLeave(leave);
+    setEditingDecision(false);
+    setDecisionType(leave?.status === 'Rejected' ? 'Approved' : 'Approved');
+    setAdminComment(
+      leave?.status === 'Pending' || !leave
+        ? 'Approved. Have a good time off!'
+        : leave.adminComment || ''
+    );
+  };
+
+  const startDecision = (type) => {
     setDecisionType(type);
     setAdminComment(
       type === 'Approved'
         ? 'Approved. Have a good time off!'
         : 'Unfortunately, your request cannot be accommodated due to current deliverables.'
     );
-    setShowModal(true);
+    setEditingDecision(true);
   };
 
   const handleDecisionSubmit = async (e) => {
@@ -86,7 +107,7 @@ const LeaveApprovalPage = () => {
 
       if (res.data.success) {
         toast.success(res.data.message);
-        setShowModal(false);
+        setEditingDecision(false);
         fetchLeaves();
       }
     } catch (error) {
@@ -125,21 +146,289 @@ const LeaveApprovalPage = () => {
     }
   };
 
+  const leaveTypeClasses = (type) =>
+    type === 'Paid'
+      ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25'
+      : type === 'Sick'
+      ? 'bg-brand-500/15 text-brand-700 dark:text-brand-300 border border-brand-500/25'
+      : 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/25';
+
+  const balanceFor = (l) =>
+    l.leaveType === 'Paid'
+      ? `${l.userId?.leaveBalance?.paid || 0}d`
+      : l.leaveType === 'Sick'
+      ? `${l.userId?.leaveBalance?.sick || 0}d`
+      : 'N/A';
+
   return (
     <div className="space-y-6">
       {/* Title */}
       <div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          Time Off & Leave Approvals
+          Leave Approvals
         </h2>
         <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
           Review employee leave requests, approve quotas, and add administrative remarks.
         </p>
       </div>
 
+      
+
+      
+
+      {/* Split view: list (left) + detail panel (right) */}
+      <div className="rounded-3xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-card overflow-hidden transition-colors grid grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)]">
+        {/* LEFT: list panel */}
+        <div className="border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 flex flex-col max-h-[640px]">
+          {/* Status tabs */}
+          <div className="flex items-center gap-1 p-2 border-b border-slate-200 dark:border-slate-800">
+            {['Pending', 'Approved', 'Rejected', 'All'].map((status) => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+                  statusFilter === status
+                    ? 'text-gray-500 underline underline-offset-8'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                {status}
+                {status === 'Pending' && stats.pending > 0 && (
+                  <span className="ml-1 px-1.5 py-0.5 text-[9px] rounded-full bg-amber-400 text-slate-950 font-black">
+                    {stats.pending}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Search */}
+          <div className="relative p-2 border-b border-slate-200 dark:border-slate-800 flex">
+            <div>
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute inset-y-0 left-6 my-auto" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search employee or reason..."
+              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            />
+            </div>
+
+            {/* Department Filter (status filter now lives in the list panel below) */}
+      
+        <div className="flex items-center gap-1.5 w-[70%]">
+          <Filter className="w-3.5 h-3.5 text-slate-400" />
+          <select
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
+            className="px-3 py-1.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+          >
+            <option value="All">All Departments</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Product Design">Product Design</option>
+            <option value="Sales & Marketing">Sales & Marketing</option>
+            <option value="Human Resources">Human Resources</option>
+            <option value="Finance">Finance</option>
+          </select>
+        </div>
+          </div>
+
+          {/* List */}
+          <div className="overflow-y-auto flex-1">
+            {loading ? (
+              <div className="p-8 text-center text-slate-500 dark:text-slate-400 flex flex-col items-center gap-3">
+                <div className="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-[11px]">Loading...</span>
+              </div>
+            ) : leaves.length === 0 ? (
+              <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-[11px]">
+                No {statusFilter !== 'All' ? statusFilter.toLowerCase() : ''} leave requests found.
+              </div>
+            ) : (
+              leaves.map((l) => (
+                <button
+                  key={l._id}
+                  onClick={() => selectLeave(l)}
+                  className={`w-full text-left px-4 py-3 border-l-2 transition-colors ${
+                    selectedLeave?._id === l._id
+                      ? 'border-brand-500 bg-brand-50 dark:bg-brand-500/10'
+                      : 'border-transparent hover:bg-slate-50 dark:hover:bg-slate-850/50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                      {l.userId?.name || 'Staff Member'}
+                    </span>
+                    {getStatusBadge(l.status)}
+                  </div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    {l.leaveType} · {l.daysCount} {l.daysCount === 1 ? 'day' : 'days'} · {l.startDate}
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT: detail panel */}
+        <div className="p-6">
+          {!selectedLeave ? (
+            <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 dark:text-slate-500 py-16">
+              <CalendarDays className="w-8 h-8 mb-3" />
+              <p className="text-sm">Select a request from the list to review it here.</p>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {/* Employee header */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={selectedLeave.userId?.avatar || demoAvatars.generic(selectedLeave.userId?.name?.slice(0, 2))}
+                    alt={selectedLeave.userId?.name}
+                    className="w-12 h-12 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+                  />
+                  <div>
+                    <div className="text-base font-bold text-slate-900 dark:text-white">
+                      {selectedLeave.userId?.name || 'Staff Member'}
+                    </div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                      {selectedLeave.userId?.department} ·{' '}
+                      <span className="font-mono">{selectedLeave.userId?.employeeId}</span>
+                    </div>
+                  </div>
+                </div>
+                {getStatusBadge(selectedLeave.status)}
+              </div>
+
+              {/* Leave type + duration */}
+              <div className="flex items-center justify-between gap-2">
+                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${leaveTypeClasses(selectedLeave.leaveType)}`}>
+                  {selectedLeave.leaveType} Leave
+                </span>
+                <div className="text-right">
+                  <div className="text-sm font-black text-slate-900 dark:text-white">
+                    {selectedLeave.daysCount} {selectedLeave.daysCount === 1 ? 'Day' : 'Days'}
+                  </div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400">Duration</div>
+                </div>
+              </div>
+
+              {/* Date span + balance */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
+                  <div className="text-[10px] text-slate-400 uppercase font-semibold">Start</div>
+                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">{selectedLeave.startDate}</div>
+                </div>
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
+                  <div className="text-[10px] text-slate-400 uppercase font-semibold">End</div>
+                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">{selectedLeave.endDate}</div>
+                </div>
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
+                  <div className="text-[10px] text-slate-400 uppercase font-semibold">Balance</div>
+                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">{balanceFor(selectedLeave)}</div>
+                </div>
+              </div>
+
+              {/* Reason */}
+              <div>
+                <div className="text-[10px] text-slate-400 uppercase font-semibold mb-1">Reason</div>
+                <p className="text-xs leading-5 text-slate-700 dark:text-slate-300">{selectedLeave.reason}</p>
+              </div>
+
+              {/* Decision area */}
+              {selectedLeave.status === 'Pending' || editingDecision ? (
+                <form onSubmit={handleDecisionSubmit} className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      HR Administrator Remarks / Comment
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={adminComment}
+                      onChange={(e) => setAdminComment(e.target.value)}
+                      placeholder="Enter comments visible to employee..."
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-500 resize-none"
+                    />
+                  </div>
+
+                  {decisionType === 'Approved' && selectedLeave.leaveType !== 'Unpaid' && (
+                    <div className="text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>
+                        Approving will deduct {selectedLeave.daysCount} days from the employee&apos;s {selectedLeave.leaveType} balance.
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setDecisionType('Approved')}
+                      onClickCapture={() => startDecision('Approved')}
+                      className={`flex-1 px-3 py-2.5 rounded-xl font-semibold text-xs transition-all inline-flex items-center justify-center gap-1.5 ${
+                        decisionType === 'Approved'
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-emerald-600/15 hover:bg-emerald-600 text-emerald-700 dark:text-emerald-300 hover:text-white'
+                      }`}
+                    >
+                      <Check className="w-3.5 h-3.5" /> Approve
+                    </button>
+                    <button
+                      type="button"
+                      onClickCapture={() => startDecision('Rejected')}
+                      className={`flex-1 px-3 py-2.5 rounded-xl font-semibold text-xs transition-all inline-flex items-center justify-center gap-1.5 ${
+                        decisionType === 'Rejected'
+                          ? 'bg-rose-600 text-white'
+                          : 'bg-rose-600/15 hover:bg-rose-600 text-rose-700 dark:text-rose-300 hover:text-white'
+                      }`}
+                    >
+                      <X className="w-3.5 h-3.5" /> Reject
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={actionLoading}
+                    className={`w-full px-5 py-2.5 rounded-xl text-white font-semibold flex items-center justify-center gap-1.5 shadow-glow disabled:opacity-50 ${
+                      decisionType === 'Approved'
+                        ? 'bg-emerald-600 hover:bg-emerald-500'
+                        : 'bg-rose-600 hover:bg-rose-500'
+                    }`}
+                  >
+                    {actionLoading ? (
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : decisionType === 'Approved' ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : (
+                      <X className="w-3.5 h-3.5" />
+                    )}
+                    Confirm {decisionType}
+                  </button>
+                </form>
+              ) : (
+                <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
+                  <div className="text-[10px] text-slate-400 uppercase font-semibold mb-1">Admin Remarks</div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                    {selectedLeave.adminComment ? `"${selectedLeave.adminComment}"` : 'Reviewed'}
+                  </p>
+                  <button
+                    onClick={() => startDecision(selectedLeave.status === 'Approved' ? 'Rejected' : 'Approved')}
+                    className="text-[11px] text-brand-600 dark:text-brand-400 hover:underline font-semibold"
+                  >
+                    Change Decision
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+
       {/* Metric Counters */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-card flex items-center justify-between transition-colors">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-center bg-gray-100 p-5 rounded-xl">
+        <div className="p-5 rounded-2xl bg-sky-100 border-1 border-gray-300 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-card flex items-center justify-between transition-colors">
           <div>
             <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase">Pending Review</span>
             <div className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">{stats.pending}</div>
@@ -149,7 +438,7 @@ const LeaveApprovalPage = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-card flex items-center justify-between transition-colors">
+        <div className="p-5 rounded-2xl bg-sky-100 border-1 border-gray-300 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-card flex items-center justify-between transition-colors">
           <div>
             <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase">Approved Leaves</span>
             <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">{stats.approved}</div>
@@ -159,7 +448,7 @@ const LeaveApprovalPage = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-card flex items-center justify-between transition-colors">
+        <div className="p-5 rounded-2xl bg-sky-100 border-1 border-gray-300 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-card flex items-center justify-between transition-colors">
           <div>
             <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase">Rejected</span>
             <div className="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1">{stats.rejected}</div>
@@ -169,7 +458,7 @@ const LeaveApprovalPage = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-card flex items-center justify-between transition-colors">
+        <div className="p-5 rounded-2xl bg-sky-100 border-1 border-gray-300 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-card flex items-center justify-between transition-colors">
           <div>
             <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase">Total Requests</span>
             <div className="text-2xl font-black text-brand-600 dark:text-brand-400 mt-1">{stats.total}</div>
@@ -179,285 +468,10 @@ const LeaveApprovalPage = () => {
           </div>
         </div>
       </div>
-
-      {/* Filter & Search Bar */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-card flex flex-col md:flex-row items-center justify-between gap-4">
-        {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl w-full md:w-auto">
-          {['Pending', 'Approved', 'Rejected', 'All'].map((status) => (
-            <button
-              key={status}
-              onClick={() => setStatusFilter(status)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                statusFilter === status
-                  ? 'bg-brand-600 text-white shadow-glow'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              {status}
-              {status === 'Pending' && stats.pending > 0 && (
-                <span className="ml-1.5 px-1.5 py-0.2 text-[10px] rounded-full bg-amber-400 text-slate-950 font-black">
-                  {stats.pending}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* Department Filter & Search */}
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-1.5">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <select
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
-            >
-              <option value="All">All Departments</option>
-              <option value="Engineering">Engineering</option>
-              <option value="Product Design">Product Design</option>
-              <option value="Sales & Marketing">Sales & Marketing</option>
-              <option value="Human Resources">Human Resources</option>
-              <option value="Finance">Finance</option>
-            </select>
-          </div>
-
-          <div className="relative w-full sm:w-60">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute inset-y-0 left-3.5 my-auto" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search employee or reason..."
-              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-500"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Requests Table */}
-      <div className="rounded-3xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm dark:shadow-card transition-colors">
-        {loading ? (
-          <div className="p-12 text-center text-slate-500 dark:text-slate-400 flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
-            <span className="text-xs">Loading leave requests...</span>
-          </div>
-        ) : leaves.length === 0 ? (
-          <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-xs">
-            No {statusFilter !== 'All' ? statusFilter.toLowerCase() : ''} leave requests found.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-100 dark:bg-slate-950/80 text-slate-600 dark:text-slate-400 uppercase font-semibold border-b border-slate-200 dark:border-slate-800">
-                <tr>
-                  <th className="px-6 py-4">Employee</th>
-                  <th className="px-6 py-4">Leave Category</th>
-                  <th className="px-6 py-4">Date Span</th>
-                  <th className="px-6 py-4">Days</th>
-                  <th className="px-6 py-4">Reason</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions / Review</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 font-medium">
-                {leaves.map((l) => (
-                  <tr key={l._id} className="hover:bg-slate-50 dark:hover:bg-slate-850/50 transition-colors">
-                    {/* Employee info */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={l.userId?.avatar || demoAvatars.generic(l.userId?.name?.slice(0, 2))}
-                          alt={l.userId?.name}
-                          className="w-9 h-9 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0"
-                        />
-                        <div>
-                          <div className="text-sm font-bold text-slate-900 dark:text-white">
-                            {l.userId?.name || 'Staff Member'}
-                          </div>
-                          <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                            {l.userId?.department} •{' '}
-                            <span className="font-mono">{l.userId?.employeeId}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* Category */}
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-block text-[11px] font-bold px-2 py-0.5 rounded-md ${
-                          l.leaveType === 'Paid'
-                            ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25'
-                            : l.leaveType === 'Sick'
-                            ? 'bg-brand-500/15 text-brand-700 dark:text-brand-300 border border-brand-500/25'
-                            : 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/25'
-                        }`}
-                      >
-                        {l.leaveType} Leave
-                      </span>
-                      <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
-                        Bal:{' '}
-                        {l.leaveType === 'Paid'
-                          ? `${l.userId?.leaveBalance?.paid || 0}d`
-                          : l.leaveType === 'Sick'
-                          ? `${l.userId?.leaveBalance?.sick || 0}d`
-                          : 'N/A'}
-                      </div>
-                    </td>
-
-                    {/* Date span */}
-                    <td className="px-6 py-4 font-mono text-slate-800 dark:text-slate-200">
-                      <div>{l.startDate}</div>
-                      <div className="text-slate-400">to {l.endDate}</div>
-                    </td>
-
-                    {/* Days */}
-                    <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
-                      {l.daysCount} {l.daysCount === 1 ? 'day' : 'days'}
-                    </td>
-
-                    {/* Reason */}
-                    <td className="px-6 py-4 text-slate-700 dark:text-slate-300 max-w-xs">{l.reason}</td>
-
-                    {/* Status */}
-                    <td className="px-6 py-4">{getStatusBadge(l.status)}</td>
-
-                    {/* Actions */}
-                    <td className="px-6 py-4 text-right">
-                      {l.status === 'Pending' ? (
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => openDecisionModal(l, 'Approved')}
-                            className="px-3 py-1.5 rounded-lg bg-emerald-600/15 hover:bg-emerald-600 text-emerald-700 dark:text-emerald-300 hover:text-white font-semibold transition-all inline-flex items-center gap-1"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Approve</span>
-                          </button>
-                          <button
-                            onClick={() => openDecisionModal(l, 'Rejected')}
-                            className="px-3 py-1.5 rounded-lg bg-rose-600/15 hover:bg-rose-600 text-rose-700 dark:text-rose-300 hover:text-white font-semibold transition-all inline-flex items-center gap-1"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                            <span>Reject</span>
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="text-right">
-                          <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate max-w-[150px]">
-                            {l.adminComment ? `"${l.adminComment}"` : 'Reviewed'}
-                          </span>
-                          <button
-                            onClick={() =>
-                              openDecisionModal(
-                                l,
-                                l.status === 'Approved' ? 'Rejected' : 'Approved'
-                              )
-                            }
-                            className="text-[10px] text-brand-600 dark:text-brand-400 hover:underline mt-0.5"
-                          >
-                            Change Decision
-                          </button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* DECISION MODAL */}
-      {showModal && selectedLeave && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 transition-colors">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-              <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                  {decisionType === 'Approved' ? 'Approve Leave Request' : 'Reject Leave Request'}
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {selectedLeave.userId?.name} • {selectedLeave.daysCount} days ({selectedLeave.leaveType} Leave)
-                </p>
-              </div>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleDecisionSubmit} className="space-y-4 text-xs">
-              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 space-y-1.5">
-                <div className="flex justify-between text-slate-500 dark:text-slate-400">
-                  <span>Duration:</span>
-                  <span className="text-slate-900 dark:text-white font-bold">
-                    {selectedLeave.startDate} to {selectedLeave.endDate} ({selectedLeave.daysCount} days)
-                  </span>
-                </div>
-                <div className="flex justify-between text-slate-500 dark:text-slate-400">
-                  <span>Reason:</span>
-                  <span className="text-slate-800 dark:text-slate-200">{selectedLeave.reason}</span>
-                </div>
-                {decisionType === 'Approved' && selectedLeave.leaveType !== 'Unpaid' && (
-                  <div className="text-[11px] text-emerald-600 dark:text-emerald-400 pt-1 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>
-                      Approving will automatically deduct {selectedLeave.daysCount} days from employee's {selectedLeave.leaveType} balance.
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  HR Administrator Remarks / Comment
-                </label>
-                <textarea
-                  rows={3}
-                  value={adminComment}
-                  onChange={(e) => setAdminComment(e.target.value)}
-                  placeholder="Enter comments visible to employee..."
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-500 resize-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  className={`px-5 py-2 rounded-xl text-white font-semibold flex items-center gap-1.5 shadow-glow disabled:opacity-50 ${
-                    decisionType === 'Approved'
-                      ? 'bg-emerald-600 hover:bg-emerald-500'
-                      : 'bg-rose-600 hover:bg-rose-500'
-                  }`}
-                >
-                  {actionLoading ? (
-                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  ) : decisionType === 'Approved' ? (
-                    <Check className="w-3.5 h-3.5" />
-                  ) : (
-                    <X className="w-3.5 h-3.5" />
-                  )}
-                  Confirm {decisionType}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default LeaveApprovalPage;
+
+
