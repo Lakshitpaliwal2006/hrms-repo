@@ -20,6 +20,8 @@ import MySalaryPage from './pages/employee/MySalaryPage';
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard.jsx"
 import FinanceAdminDashboard from './pages/financeadmin/FinanceAdminDashboard.jsx';
 import ManagerDashboard from './pages/manager/ManagerDashboard.jsx';
+import EmployeeCompensation from "./pages/financeadmin/EmployeeCompensation.jsx";
+import PaymentHistory from './pages/financeadmin/PaymentHistory.jsx';
 
 // Root redirect handler based on authentication status & role
 const RootRedirect = () => {
@@ -91,6 +93,9 @@ function App() {
                 <Route >
                   <Route element={<AppLayout />}>
                     <Route path="/financeadmin" element={<FinanceAdminDashboard />} />
+                    <Route path="financeadmin/compensation" element={<EmployeeCompensation />} />
+                    <Route path="/financeadmin/payment-history" element={<PaymentHistory />}
+                    />
                   </Route>
                 </Route>
 

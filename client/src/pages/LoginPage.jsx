@@ -21,7 +21,7 @@ import { useToast } from '../context/ToastContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api/client';
 import demoAvatars from '../utils/avatars';
-import HLetterLogo from '../components/common/HLetterLogo';
+import LaxmayaLogoText from '../components/common/HLetterLogo';
 
 const LoginPage = () => {
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup' | 'verify'
@@ -106,6 +106,34 @@ const LoginPage = () => {
         'bg-green-600/15 text-amber-700 dark:text-amber-300 border border-amber-500/25',
     },
   ];
+
+  // Role Switcher
+  const handleRoleClick = (user) => {
+  switch (user.role) {
+    case "Employee":
+      navigate("/employee/");
+      break;
+
+    case "HR Admin":
+      navigate("/admin/");
+      break;
+
+    case "Super Admin":
+      navigate("/superadmin");
+      break;
+
+    case "Manager":
+      navigate("/manager");
+      break;
+
+    case "Finance Admin":
+      navigate("/financeadmin");
+      break;
+
+    default:
+      console.log("Unknown role");
+  }
+};
 
   // Check URL query parameters for token/email
   useEffect(() => {
@@ -239,8 +267,7 @@ const LoginPage = () => {
       {/* Header bar */}
       <header className="relative z-10 px-6 py-4 border-b border-slate-200 dark:border-slate-800/60 bg-white/70 dark:bg-slate-950/40 backdrop-blur-md transition-colors duration-200">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <HLetterLogo iconSize={36} showTagline={false} />
-
+          <LaxmayaLogoText iconSize={10} showTagline={false} />
           <div className="flex items-center gap-3">
             <span className="text-xs text-brand-400 dark:text-slate-400 font-semibold hidden sm:inline-block">
               Human Resource Management System
@@ -436,7 +463,7 @@ const LoginPage = () => {
                       <button
                         key={account.name}
                         type="button"
-                        onClick={() => handleQuickDemo(account.email, account.password)}
+                        onClick={() => handleRoleClick(account)}
                         className="flex-1 min-w-0 p-2 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-brand-500/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 hover:shadow-md transition-all flex flex-col items-center justify-center text-center gap-1 shadow-sm"
                       >
                         <img

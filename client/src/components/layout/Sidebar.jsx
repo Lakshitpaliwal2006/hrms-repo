@@ -21,7 +21,7 @@ import {
 
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
-import { HLetterIcon } from "../common/HLetterLogo";
+import { LaxmayaLogoText } from "../common/HLetterLogo";
 
 // Role -> nav items mapping
 const navConfig = {
@@ -29,15 +29,15 @@ const navConfig = {
     { label: "Dashboard", path: "/admin", icon: LayoutDashboard, exact: true },
     { label: "Employee Directory", path: "/admin/employees", icon: Users },
     { label: "All Attendance", path: "/admin/attendance", icon: Clock },
-    { label: "Time Off Approvals", path: "/admin/leaves", icon: CalendarDays },
-    { label: "Payroll Management", path: "/admin/payroll", icon: DollarSign },
+    { label: "Time Off Approvals", path: "/admin/approvals", icon: CalendarDays },
+    { label: "Reports & analytics", path: "/admin/reports", icon: DollarSign },
     { label: "My Profile", path: "/admin/profile", icon: UserCircle },
   ],
   employee: [
     { label: "Dashboard", path: "/employee", icon: LayoutDashboard, exact: true },
     { label: "My Attendance", path: "/employee/attendance", icon: Clock },
-    { label: "My Time Off", path: "/employee/leaves", icon: CalendarDays },
-    { label: "My Payslips", path: "/employee/salary", icon: DollarSign },
+    { label: "My Time Off", path: "/employee/timeoff", icon: CalendarDays },
+    { label: "My Payslips", path: "/employee/Payslips", icon: DollarSign },
     { label: "My Profile", path: "/employee/profile", icon: UserCircle },
   ],
   superadmin: [
@@ -49,17 +49,16 @@ const navConfig = {
   ],
   manager: [
     { label: "Dashboard", path: "/manager", icon: LayoutDashboard, exact: true },
-    { label: "My Team", path: "/manager/team", icon: Users2 },
+    { label: "My Team & reports", path: "/manager/teamdetail", icon: Users2 },
     { label: "Attendance & Time", path: "/manager/attendance", icon: Clock },
-    { label: "Team Report", path: "/manager/reports", icon: FileBarChart2 },
     { label: "Profile", path: "/manager/profile", icon: UserCircle },
   ],
   financeadmin: [
-    { label: "Dashboard", path: "/finance", icon: LayoutDashboard, exact: true },
-    { label: "Employee Compensation", path: "/finance/compensation", icon: Wallet },
-    { label: "Payroll", path: "/finance/payroll", icon: DollarSign },
-    { label: "Payment & Financial Reports", path: "/finance/reports", icon: Receipt },
-    { label: "Profile", path: "/finance/profile", icon: UserCircle },
+    { label: "Dashboard", path: "/financeadmin", icon: LayoutDashboard, exact: true },
+    { label: "Payroll Management", path: "/financeadmin/payroll", icon: Wallet },
+    { label: "Employee Compensation", path: "financeadmin/compensation", icon: DollarSign },
+    { label: "Payment History", path: "/financeadmin/payment-history", icon: Receipt },
+    { label: "Profile", path: "/financeadmin/profile", icon: UserCircle },
   ],
 };
 
@@ -185,7 +184,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 aria-label="Open Sidebar"
               >
                 <span className="absolute inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity duration-200 pointer-events-none">
-                  <HLetterIcon size={38} />
+                  <LaxmayaLogoText size={20} />
                 </span>
                 <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
                   <PanelLeftOpen className="w-6 h-6 text-slate-600 dark:text-slate-300" />
